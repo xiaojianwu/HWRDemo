@@ -87,7 +87,7 @@ QByteArray GoogleRecognizer::pack(STROKES strokes)
 
 
 	objRequest["ink"] = trace;
-	objRequest["language"] = "zh_TW";
+	objRequest["language"] = "zh_CN";
 
 	objRequests.append(objRequest);
 

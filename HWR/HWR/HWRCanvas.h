@@ -38,10 +38,6 @@ protected:
 protected slots:
 	void recognize(void);
 
-	
-private:
-	void generateCurrentPath();
-
 private:
 	QList<QPainterPath>  m_paths;
 	QPainterPath		   m_currcentPath;

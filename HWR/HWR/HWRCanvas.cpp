@@ -40,7 +40,8 @@ void HWRCanvas::mousePressEvent(QMouseEvent *event)
 		handwritingX << event->localPos().x();
 		handwritingY << event->localPos().y();
 
-		generateCurrentPath();
+		m_pCrntPath = new QPainterPath();
+		m_pCrntPath->moveTo(event->localPos().x(), event->localPos().y());
 		update();
 	}
 }
@@ -48,10 +49,17 @@ void HWRCanvas::mouseMoveEvent(QMouseEvent *event)
 {
 	if (m_isDrawing) // 鼠标按下状态
 	{
-		handwritingX << event->localPos().x();
-		handwritingY << event->localPos().y();
+		float x = event->localPos().x();
+		float y = event->localPos().y();
 
-		generateCurrentPath();
+		float prevX = handwritingX.at(handwritingX.size() - 1);
+		float prevY = handwritingY.at(handwritingY.size() - 1);
+
+		m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
+
+		handwritingX << x;
+		handwritingY << y;
+
 		update();
 	}
 
@@ -64,7 +72,14 @@ void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 
 	m_isDrawing = false;
 
-	generateCurrentPath();
+	float x = event->localPos().x();
+	float y = event->localPos().y();
+
+	float prevX = handwritingX.at(handwritingX.size() - 1);
+	float prevY = handwritingY.at(handwritingY.size() - 1);
+
+	m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
+
 	m_lPreviousPath << m_pCrntPath;
 
 	update();
@@ -116,58 +131,6 @@ void HWRCanvas::paintEvent(QPaintEvent *event)
 	}
 	p->end();
 }
-
-
-
-void HWRCanvas::generateCurrentPath() 
-{
-	// TODO 内存泄漏
-	//if (m_pCrntPath && m_isDrawing)
-	//{
-	//	delete m_pCrntPath;
-	//	m_pCrntPath = NULL;
-	//}
-	m_pCrntPath = new QPainterPath();
-	if (!handwritingX.empty()) {
-		if (handwritingX.size() > 1) {
-			for (int i = handwritingX.size() - 2; i < handwritingX.size(); i++) {
-				int dx, dy;
-				if (i >= 0) {
-					if (i == 0) {
-						dx = ((handwritingX.at(i + 1) - handwritingX.at(i)) / SMOOTHING);
-						dy = ((handwritingY.at(i + 1) - handwritingY.at(i)) / SMOOTHING);
-					}
-					else if (i == handwritingX.size() - 1) {
-						dx = ((handwritingX.at(i) - handwritingX.at(i - 1)) / SMOOTHING);
-						dy = ((handwritingY.at(i) - handwritingY.at(i - 1)) / SMOOTHING);
-					}
-					else {
-						dx = ((handwritingX.at(i + 1) - handwritingX.at(i - 1)) / SMOOTHING);
-						dy = ((handwritingY.at(i + 1) - handwritingY.at(i - 1)) / SMOOTHING);
-					}
-				}
-			}
-		}
-	}
-
-	bool first = true;
-	for (int i = 0; i < handwritingX.size(); i++) {
-		float x = handwritingX.at(i);
-		float y = handwritingY.at(i);
-		if (first) {
-			first = false;
-			m_pCrntPath->moveTo(x, y);
-		}
-		else {
-			float prevX = handwritingX.at(i - 1);
-			float prevY = handwritingY.at(i - 1);
-
-			m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
-		}
-	}
-}
-
-
 
 void HWRCanvas::clear() {
 	handwritingX.clear();
