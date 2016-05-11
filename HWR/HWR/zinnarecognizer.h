@@ -15,12 +15,7 @@ public:
 
 	virtual bool init(QHash<QString, QString> options);
 
-	virtual QStringList recognize(QList<QPainterPath*> strokes);
-
-
-	static const QString OPTION_KEY_MODEL_PATH;
-	static const QString OPTION_KEY_CANVAS_WIDTH;
-	static const QString OPTION_KEY_CANVAS_HEIGHT;
+	virtual QStringList recognize(STROKES strokes);
 
 private:
 	QString	m_modelPath;

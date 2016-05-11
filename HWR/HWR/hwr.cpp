@@ -2,7 +2,7 @@
 
 #include "StrokesRecognizer.h"
 #include "handwritor.h"
-#include "handwritor2.h"
+#include "HWRCanvas.h"
 
 #include "hwrpaint.h"
 
@@ -29,7 +29,7 @@ void HWR::onOne()
 	//w->show();
 
 
-	handwritor2 *hw = new handwritor2(NULL, NULL, NULL, NULL, NULL);
+	HWRCanvas *hw = new HWRCanvas(NULL, NULL, NULL, NULL, NULL);
 	hw->show();
 
 

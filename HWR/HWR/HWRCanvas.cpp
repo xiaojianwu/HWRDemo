@@ -1,14 +1,17 @@
 #include <iostream> /* std .. */
-#include "handwritor2.h" /* class handwritor2 */
+#include "HWRCanvas.h" /* class handwritor2 */
 #include <QtCore/QDebug>
 #include <QtGui/QPainter> /* QPainter */
 
 #include <QCoreApplication>
 
 
-size_t handwritor2::m_writor_width_fixed = 400;
-size_t handwritor2::m_writor_height_fixed = 400;
-int handwritor2::m_writor_pen_w_fixed = 4;
+#include "recognizerfactory.h"
+
+
+size_t HWRCanvas::m_writor_width_fixed = 400;
+size_t HWRCanvas::m_writor_height_fixed = 400;
+int HWRCanvas::m_writor_pen_w_fixed = 4;
 
 
 #define __STLST_AL \
@@ -16,7 +19,7 @@ int handwritor2::m_writor_pen_w_fixed = 4;
 	"border-radius: 8px"
 
 
-handwritor2::handwritor2(int * ret, char * err, QWidget * focus,
+HWRCanvas::HWRCanvas(int * ret, char * err, QWidget * focus,
 	const char * model, QWidget * parent)
 	: QWidget(parent), allpage(0), index(0) 
 	, m_isDrawing(false)
@@ -34,29 +37,15 @@ handwritor2::handwritor2(int * ret, char * err, QWidget * focus,
 	option_layout = NULL;
 	candidate_layout = NULL;
 
-	m_recognizer = NULL;
-	m_recognizer = zinnia_recognizer_new();/* create recognizer engine */
-	/* open model */
-	if (model) {
-		open_result = zinnia_recognizer_open(m_recognizer, model);
-	}
-	else {
-		QString modelPath = QString("%1\\%2").arg(qApp->applicationDirPath()).arg(handwritor2_MODEL_DFT);
-		open_result = zinnia_recognizer_open(m_recognizer, modelPath.toStdString().c_str());
-	}
-	if (!open_result) {
-		memset(errstr, 0, handwritor2_ERR_MIN);
-		strncpy(errstr, zinnia_recognizer_strerror(m_recognizer),
-			handwritor2_ERR_MIN - 1);
-		if (err) {
-			strncpy(err, errstr, handwritor2_ERR_MIN - 1);
-		}
-		if (ret) {
-			*ret = -1;/* zinnia_recognizer_open fail */
-		}
-		std::cerr << errstr << std::endl;
-		goto fail_return;
-	} /* ! open_result */
+	m_recognizer = RecognizerFactory::Get()->getRecognizer(RecognizerFactory::HWR_TYPE_ZINNA);
+
+
+	QHash<QString, QString> options;
+	QString modelPath = QString("%1\\%2").arg(qApp->applicationDirPath()).arg(handwritor2_MODEL_DFT);
+	options[AbstractRecognizer::OPTION_KEY_MODEL_PATH] = modelPath;
+	options[AbstractRecognizer::OPTION_KEY_CANVAS_HEIGHT] = QString::number(m_writor_height_fixed);
+	options[AbstractRecognizer::OPTION_KEY_CANVAS_WIDTH] = QString::number(m_writor_width_fixed); ;
+	m_recognizer->init(options);
 
 	/* ready to recognize */
 	m_recogtimer.setInterval(2000);
@@ -75,8 +64,8 @@ handwritor2::handwritor2(int * ret, char * err, QWidget * focus,
 	writor_layout = new QHBoxLayout();
 	writor_layout->setContentsMargins(0, 0, 0, 0);
 
-	spacer = new QSpacerItem(handwritor2::m_writor_width_fixed - 64 - 10,
-		handwritor2::m_writor_height_fixed - 64 - 10);
+	spacer = new QSpacerItem(HWRCanvas::m_writor_width_fixed - 64 - 10,
+		HWRCanvas::m_writor_height_fixed - 64 - 10);
 	writor_layout->addItem(spacer);
 
 	option_layout = new QVBoxLayout();
@@ -152,13 +141,10 @@ handwritor2::handwritor2(int * ret, char * err, QWidget * focus,
 
 	return;
 
-fail_return:
-	this->destroy();
-
 } /* handwritor2::handwritor2 */
 
 
-int handwritor2::destroy(void) {
+int HWRCanvas::destroy(void) {
 	if (m_destroyed) {
 		return -1;
 	}
@@ -187,19 +173,12 @@ int handwritor2::destroy(void) {
 		delete d;
 	}
 
-	if (this->m_recognizer) {
-		zinnia_recognizer_t * d = this->m_recognizer;
-		this->m_recognizer = NULL;
-		(void)zinnia_recognizer_close(d);
-		(void)zinnia_recognizer_destroy(d);
-	}
-
 	this->m_destroyed = true;
 	return 0;
 } /* handwritor2::destroy */
 
 
-void handwritor2::mousePressEvent(QMouseEvent *event) {
+void HWRCanvas::mousePressEvent(QMouseEvent *event) {
 	if (!m_isDrawing)
 	{
 		m_strokes.clear();
@@ -207,6 +186,15 @@ void handwritor2::mousePressEvent(QMouseEvent *event) {
 	}
 	m_isDrawing = true;
 	m_recogtimer.stop();
+
+	handwritingX.clear();
+	handwritingY.clear();
+
+	w.clear();
+	
+
+	handwritingX << event->localPos().x();
+	handwritingY << event->localPos().y();
 
 	foreach(QPoint* point, m_currentstroke.points)
 		delete point;
@@ -218,7 +206,7 @@ void handwritor2::mousePressEvent(QMouseEvent *event) {
 	point->setY(event->y());
 	m_currentstroke.points.append(point);
 }
-void handwritor2::mouseMoveEvent(QMouseEvent *event)
+void HWRCanvas::mouseMoveEvent(QMouseEvent *event)
 {
 	static int count = 0;
 	if (m_isDrawing) // 鼠标按下状态
@@ -228,18 +216,26 @@ void handwritor2::mouseMoveEvent(QMouseEvent *event)
 		point->setY(event->y());
 		m_currentstroke.points.append(point);
 		m_currentstroke.segments++;
+
+
+		handwritingX << event->localPos().x();
+		handwritingY << event->localPos().y();
 	}
 	count++;
 	if (count % 10 == 0)
 		update();
 }
 
-void handwritor2::mouseReleaseEvent(QMouseEvent *event)
+void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (!m_isDrawing)
 		return;
 	append_stroke(m_currentstroke);
 	update();
+
+	w << handwritingX << handwritingY;
+
+	trace << w;
 	
 
 	m_currentstroke.segments = 0;
@@ -250,7 +246,7 @@ void handwritor2::mouseReleaseEvent(QMouseEvent *event)
 	m_recogtimer.start();
 }
 
-void handwritor2::append_stroke(LineStroke& stroke)
+void HWRCanvas::append_stroke(LineStroke& stroke)
 {
 	LineStroke s;
 	s.segments = stroke.segments;
@@ -267,7 +263,7 @@ void handwritor2::append_stroke(LineStroke& stroke)
 	}
 }
 
-void handwritor2::genbuttonstate(void) {
+void HWRCanvas::genbuttonstate(void) {
 	this->up->hide();
 	this->down->hide();
 	for (int i = 0; i < 10; i++) {
@@ -284,21 +280,21 @@ void handwritor2::genbuttonstate(void) {
 
 }
 
-void handwritor2::turnpageup()
+void HWRCanvas::turnpageup()
 {
 	if (index > 0)
 		index--;
 	genbuttonstate();
 }
 
-void handwritor2::turnpagedown()
+void HWRCanvas::turnpagedown()
 {
 	if (index < allpage - 1)
 		index++;
 	genbuttonstate();
 }
 
-void handwritor2::chooseQchar(void) {
+void HWRCanvas::chooseQchar(void) {
 	static QString chose;
 
 	/*
@@ -321,63 +317,18 @@ void handwritor2::chooseQchar(void) {
 	}
 } /* handwritor2::chooseQchar */
 
-void handwritor2::stok2qchar()
-{
-	zinnia_result_t *result;
-	LineStroke * l;
-	m_character = zinnia_character_new();
-
-	dstr.clear();
-	zinnia_character_clear(m_character);
-	zinnia_character_set_width(m_character, m_writor_width_fixed);
-	zinnia_character_set_height(m_character, m_writor_height_fixed);
-
-	for (int i = 0; i < m_strokes.size(); i++)
-	{
-		l = &m_strokes[i];
-
-		for (int j = 0; j < (l->segments); j += (l->segments / 10 + 1))
-		{
-			l->points[j]->x(), l->points[j]->y();
-			//   if(j>2)
-			//       j=l->segments-1;
-			zinnia_character_add(m_character, i, l->points[j]->x(), l->points[j]->y());
-		}
-	}
-
-	result = zinnia_recognizer_classify(m_recognizer, m_character, 100);
-	if (result == NULL)
-	{
-		fprintf(stderr, "%s\n", zinnia_recognizer_strerror(m_recognizer));
-		zinnia_character_destroy(m_character);
-		//zinnia_recognizer_destroy(recognizer);
-		return;
-	}
-
-	for (int i = 0; i < zinnia_result_size(result); ++i)
-	{
-
-		dstr.append(QString::fromUtf8(zinnia_result_value(result, i), 3));
-
-		// strcpy(c->charactor,zinnia_result_value(result, i));
-
-		fprintf(stdout, "%s\t%f\n", zinnia_result_value(result, i),
-			zinnia_result_score(result, i));
-	}
-
-	zinnia_result_destroy(result);
-	zinnia_character_destroy(m_character);
-	return;
-}
-
-void handwritor2::recognize()
+void HWRCanvas::recognize()
 {
 	m_recogtimer.stop();
 
 	m_isDrawing = false;
-	stok2qchar();
+
 	m_strokes.clear();
 	index = 0;
+
+	dstr = m_recognizer->recognize(trace);
+
+	trace.clear();
 
 	//向上取整,实现方法
 	allpage = ((dstr.count() % 10) == 0) ? (dstr.count()) / 10 : (dstr.count()) / 10 + 1;
@@ -385,7 +336,7 @@ void handwritor2::recognize()
 	update();
 }
 
-void handwritor2::paintEvent(QPaintEvent *event)
+void HWRCanvas::paintEvent(QPaintEvent *event)
 {
 	QPainter painter(this);
 
@@ -397,14 +348,14 @@ void handwritor2::paintEvent(QPaintEvent *event)
 	QPen pen_b;
 	pen_b.setStyle(Qt::DotLine);
 	painter.setPen(pen_b);
-	painter.drawLine(0, handwritor2::m_writor_height_fixed / 2,
-		handwritor2::m_writor_width_fixed, handwritor2::m_writor_height_fixed / 2);
+	painter.drawLine(0, HWRCanvas::m_writor_height_fixed / 2,
+		HWRCanvas::m_writor_width_fixed, HWRCanvas::m_writor_height_fixed / 2);
 	/* | */
-	painter.drawLine(handwritor2::m_writor_width_fixed / 2, 0,
-		handwritor2::m_writor_width_fixed / 2, handwritor2::m_writor_height_fixed);
+	painter.drawLine(HWRCanvas::m_writor_width_fixed / 2, 0,
+		HWRCanvas::m_writor_width_fixed / 2, HWRCanvas::m_writor_height_fixed);
 
 	QPen pen;
-	pen.setWidth(handwritor2::m_writor_pen_w_fixed);
+	pen.setWidth(HWRCanvas::m_writor_pen_w_fixed);
 	painter.setPen(pen);
 
 	// painter.save();

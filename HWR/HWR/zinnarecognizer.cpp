@@ -4,9 +4,7 @@
 
 #include <QDebug>
 
-const QString ZinnaRecognizer::OPTION_KEY_MODEL_PATH = "model.path";
-const QString ZinnaRecognizer::OPTION_KEY_CANVAS_WIDTH = "canvas.width";
-const QString ZinnaRecognizer::OPTION_KEY_CANVAS_HEIGHT = "canvas.height";
+
 
 
 ZinnaRecognizer::ZinnaRecognizer(QObject *parent)
@@ -55,7 +53,7 @@ bool ZinnaRecognizer::init(QHash<QString, QString> options)
 	return true;
 }
 
-QStringList ZinnaRecognizer::recognize(QList<QPainterPath*> strokes)
+QStringList ZinnaRecognizer::recognize(STROKES strokes)
 {
 	// Perform the recognition
 	QStringList dstr;
@@ -69,16 +67,23 @@ QStringList ZinnaRecognizer::recognize(QList<QPainterPath*> strokes)
 	int xOrigin = 0;
 	int yOrigin = 0;
 
-	for (int i = 0; i < strokes.size(); i++) {
-		for (int j = 0; j <= 1; j += 1) {
-			QPointF cursor = strokes.at(i)->pointAtPercent(j);
-			m_character->add(i, cursor.x() - xOrigin, cursor.y() - yOrigin);
+	int index = 0;
+	foreach (STROKE stroke, strokes) {
+		int size = stroke.at(0).size();
+
+		int step =  size / 10 + 1;
+		for (int i = 0; i < size; i += step) {
+			m_character->add(index, stroke.at(0).at(i), stroke.at(1).at(i));
 		}
+		index++;
 	}
 
 	zinnia::Result *result = m_recognizer->classify(*m_character, 100);
+
+	
 	if (!result) {
-		qDebug() << m_recognizer->what();
+		std::string err = m_recognizer->what();
+		qDebug() << QString::fromUtf8(m_recognizer->what());
 	}
 	else {
 		for (size_t i = 0; i < result->size(); ++i) {

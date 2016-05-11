@@ -13,22 +13,29 @@
 #	include <QtWidgets/QVBoxLayout>
 
 
-#include <zinnia.h> /* zinnia_character_t .. */
+#include <QList>
+
+
+//#include <zinnia.h> /* zinnia_character_t .. */
 #include "LineStroke.h" /* class LineStroke */
+
+
+#include "abstractrecognizer.h"
 
 
 #define handwritor2_MODEL_DFT "handwriting-zh_CN.model"
 #define handwritor2_ERR_MIN (64)
 
 
-class handwritor2 : public QWidget {
+
+class HWRCanvas : public QWidget {
 	Q_OBJECT
 
 		/* err min handwritor2_ERR_MIN */
 public:
-	handwritor2(int * ret, char * err, QWidget * focus,
+	HWRCanvas(int * ret, char * err, QWidget * focus,
 		const char * model = 0, QWidget * parent = 0);
-	~handwritor2(void) { destroy(); }
+	~HWRCanvas(void) { destroy(); }
 	int destroy(void);
 	bool is_destroyed(void) { return m_destroyed; }
 	
@@ -45,7 +52,7 @@ signals:
 	void paintEvent(QPaintEvent * event);
 
 	void genbuttonstate(void);
-	void stok2qchar(void);
+
 	void append_stroke(LineStroke& stroke);
 	
 
@@ -72,8 +79,23 @@ private:
 
 	LineStroke m_currentstroke;
 	QVector<LineStroke>  m_strokes;
-	zinnia_character_t * m_character;
-	zinnia_recognizer_t * m_recognizer;
+
+	QList<QPainterPath>  m_paths;
+	QPainterPath		   m_currcentPath;
+
+	XYPOINTS handwritingX;
+	XYPOINTS handwritingY;
+
+	STROKE w;
+	STROKES trace;
+
+
+
+	//zinnia_character_t * m_character;
+	//zinnia_recognizer_t * m_recognizer;
+
+
+	AbstractRecognizer* m_recognizer;
 
 	static size_t m_writor_width_fixed;
 	static size_t m_writor_height_fixed;
