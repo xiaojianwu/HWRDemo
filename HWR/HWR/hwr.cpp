@@ -4,11 +4,13 @@
 
 HWR::HWR(QWidget *parent)
 	: QWidget(parent)
+	, m_index(0)
 {
 	ui.setupUi(this);
 
-	connect(ui.pushButton, SIGNAL(clicked()), this, SLOT(onOne()));
-	connect(ui.pushButton_2, SIGNAL(clicked()), this, SLOT(onTwo()));
+	connect(ui.pushButton, SIGNAL(clicked()), this, SLOT(onStartHWR()));
+
+	connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(int)));
 }
 
 HWR::~HWR()
@@ -17,25 +19,15 @@ HWR::~HWR()
 }
 
 
-void HWR::onOne()
+void HWR::onStartHWR()
 {
-	//StrokesRecognizer* w = new StrokesRecognizer;
 
-	//HWRPaint* w = new HWRPaint;
-	//w->show();
-
-
-	HWRCanvas *hw = new HWRCanvas(this);
+	HWRCanvas *hw = new HWRCanvas(m_index, this);
 	hw->show();
-
-
-
-
 }
-void HWR::onTwo()
+
+
+void HWR::onTypeChanged(int index)
 {
-	//handwritor_debug* hw = new handwritor_debug;
-	// hw.setGeometry(200, 200, 300, 300);
-	//handwritor *hw = new handwritor(NULL, NULL, NULL, NULL, NULL);
-	//hw->show();
+	m_index = index;
 }

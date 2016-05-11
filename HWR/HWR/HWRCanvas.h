@@ -1,13 +1,13 @@
-#if !defined(_handwritor2_H_)
-#define _handwritor2_H_ (1)
+#if !defined(_HWR_CANVAS_H_)
+#define _HWR_CANVAS_H_ (1)
 
 
-#include <QtCore/QTimer>
+#include <QTimer>
 #include <QMouseEvent>
 #include <QPaintEvent>
 
 
-#include <QWidget>
+#include <QDialog>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -27,12 +27,11 @@
 
 #define SMOOTHING			6
 
-class HWRCanvas : public QWidget {
+class HWRCanvas : public QDialog {
 	Q_OBJECT
 
-		/* err min handwritor2_ERR_MIN */
 public:
-	HWRCanvas(QWidget * parent = 0);
+	HWRCanvas(int hwrType, QWidget * parent = 0);
 	~HWRCanvas(void) { destroy(); }
 	int destroy(void);
 
@@ -99,15 +98,6 @@ private:
 	static size_t m_writor_height_fixed;
 	static int m_writor_pen_w_fixed;
 
-	//bool m_destroyed;
-
 	bool m_isDrawing;
-}; /* class handwritor2 */
-
-
-#endif /* !defined(_handwritor2_H_) */
-
-
-/*
- * end of file handwritor2.h
- */
+};
+#endif /* !defined(_HWR_CANVAS_H_) */

@@ -12,12 +12,15 @@ public:
 	HWR(QWidget *parent = 0);
 	~HWR();
 
-private slots:
-void onOne();
-void onTwo();
+	private slots:
+	void onStartHWR();
+
+	void onTypeChanged(int index);
 
 private:
 	Ui::HWRClass ui;
+
+	int m_index;
 };
 
 #endif // HWR_H

@@ -1,5 +1,4 @@
-#include <iostream> /* std .. */
-#include "HWRCanvas.h" /* class handwritor2 */
+#include "HWRCanvas.h"
 #include <QDebug>
 #include <QPainter> /* QPainter */
 
@@ -19,8 +18,8 @@ int HWRCanvas::m_writor_pen_w_fixed = 4;
 	"border-radius: 8px"
 
 
-HWRCanvas::HWRCanvas(QWidget * parent)
-	: QWidget(parent), allpage(0), index(0) 
+HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
+	: QDialog(parent), allpage(0), index(0)
 	, m_isDrawing(false)
 	, m_pCrntPath(NULL)
 {
@@ -31,13 +30,11 @@ HWRCanvas::HWRCanvas(QWidget * parent)
 	QPalette palette;
 	QFont font;
 
-	//m_destroyed = false;
-
 	writor_layout = NULL;
 	option_layout = NULL;
 	candidate_layout = NULL;
 
-	m_recognizer = RecognizerFactory::Get()->getRecognizer(RecognizerFactory::HWR_TYPE_ZINNA);
+	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)hwrType);
 
 
 	QHash<QString, QString> options;
@@ -153,7 +150,7 @@ HWRCanvas::HWRCanvas(QWidget * parent)
 
 	return;
 
-} /* handwritor2::handwritor2 */
+}
 
 
 int HWRCanvas::destroy(void) {
@@ -306,16 +303,9 @@ void HWRCanvas::paintEvent(QPaintEvent *event)
 	/* | */
 	p->drawLine(m_writor_width_fixed / 2, 0, m_writor_width_fixed / 2, m_writor_height_fixed);
 
-	// Draw the cache
-	//if (NULL != m_pCache) {
-	//	p->drawPixmap(QPoint(), *m_pCache);
-	//}
-
-
 	QPen pen;
 	pen.setWidth(m_writor_pen_w_fixed);
 	p->setPen(pen);
-
 
 	foreach(QPainterPath* path, m_lPreviousPath) {
 		if (NULL != path) {
