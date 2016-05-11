@@ -77,5 +77,7 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 
 	delete m_character;
 
+	emit recognizeResult(dstr);
+
 	return dstr;
 }

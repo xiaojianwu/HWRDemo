@@ -8,10 +8,6 @@
 
 
 #include <QWidget>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-
 
 #include <QList>
 
@@ -21,10 +17,6 @@
 
 #include "abstractrecognizer.h"
 
-
-#define handwritor2_MODEL_DFT "handwriting-zh_CN.model"
-#define handwritor2_ERR_MIN (64)
-
 #define SMOOTHING			6
 
 class HWRCanvas : public QWidget {
@@ -32,10 +24,11 @@ class HWRCanvas : public QWidget {
 
 public:
 	HWRCanvas(int hwrType, QWidget * parent = 0);
-	~HWRCanvas(void) { destroy(); }
-	int destroy(void);
+	~HWRCanvas(void) { }
 
+	void setRecognizer(AbstractRecognizer* recognizer);
 
+	void clear();
 	/* evt */
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
@@ -43,39 +36,16 @@ protected:
 	void mouseReleaseEvent(QMouseEvent * event);
 	void paintEvent(QPaintEvent * event);
 
-	
-
-
-
 protected slots:
 	void recognize(void);
-	void turnpageup(void);
-	void turnpagedown(void);
-	void clear();
-	void genbuttonstate(void);
 
-	void onRecognizeResult(QStringList list);
-
-
+	
 private:
 	void generateCurrentPath();
 
 private:
-	QVBoxLayout * master_layout;
-	QHBoxLayout * writor_layout;
-	QVBoxLayout * option_layout;
-	QHBoxLayout * candidate_layout;
-	QPushButton* candidate_btns[10];
-	QPushButton *up;
-	QPushButton *down;
-	QPushButton *m_btnClear;
-
-
 	QTimer m_recogtimer;
 	QStringList m_resultList;
-	int index;
-	int allpage;
-
 
 	QList<QPainterPath>  m_paths;
 	QPainterPath		   m_currcentPath;

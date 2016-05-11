@@ -2,17 +2,34 @@
 
 #include "abstractrecognizer.h"
 
+#include "recognizerfactory.h"
+
 HWR::HWR(QWidget *parent)
 	: QWidget(parent)
 	, m_index(0)
 {
 	ui.setupUi(this);
 
-	connect(ui.pushButton, SIGNAL(clicked()), this, SLOT(onStartHWR()));
+	
+	QString modelPath = QString("%1\\%2").arg(qApp->applicationDirPath()).arg("handwriting-zh_CN.model");
+	m_options[AbstractRecognizer::OPTION_KEY_MODEL_PATH] = modelPath;
+	m_options[AbstractRecognizer::OPTION_KEY_CANVAS_HEIGHT] = QString::number(400);
+	m_options[AbstractRecognizer::OPTION_KEY_CANVAS_WIDTH] = QString::number(400); ;
 
-	connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(int)));
+
 
 	m_hwArea = new HWRCanvas(m_index, ui.widget_hwArea);
+
+	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index);
+	m_hwArea->setRecognizer(m_recognizer);
+	m_recognizer->init(m_options);
+
+	m_recognizer->init(m_options);
+
+
+	connect(ui.pushButton_clear, SIGNAL(clicked()), this, SLOT(onClear()));
+
+	connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(int)));
 }
 
 HWR::~HWR()
@@ -21,15 +38,33 @@ HWR::~HWR()
 }
 
 
-void HWR::onStartHWR()
+void HWR::onClear()
 {
-
-	HWRCanvas *hw = new HWRCanvas(m_index, this);
-	hw->show();
+	m_hwArea->clear();
+	ui.listWidget->clear();
 }
 
 
 void HWR::onTypeChanged(int index)
 {
 	m_index = index;
+
+	disconnect(m_recognizer, 0);
+
+	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index);
+	m_hwArea->setRecognizer(m_recognizer);
+	m_recognizer->init(m_options);
+
+	connect(m_recognizer, SIGNAL(recognizeResult(QStringList)), this, SLOT(onRecognizeResult(QStringList)));
+
+	
+}
+
+#define CANDIDATE_COUNT 5
+
+void HWR::onRecognizeResult(QStringList list)
+{
+	m_resultList = list;
+
+	ui.listWidget->addItems(m_resultList);
 }

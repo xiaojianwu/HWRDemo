@@ -15,9 +15,12 @@ public:
 	~HWR();
 
 	private slots:
-	void onStartHWR();
+	void onClear();
 
 	void onTypeChanged(int index);
+
+private slots:
+	void onRecognizeResult(QStringList list);
 
 private:
 	Ui::HWRClass ui;
@@ -25,6 +28,12 @@ private:
 	int m_index;
 
 	HWRCanvas *m_hwArea;
+
+	AbstractRecognizer* m_recognizer;
+
+	QStringList m_resultList;
+
+	QHash<QString, QString> m_options;
 };
 
 #endif // HWR_H

@@ -13,33 +13,18 @@
   <property name="windowTitle">
    <string>HWR</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pushButton_clear">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>40</y>
-     <width>201</width>
-     <height>61</height>
+     <x>10</x>
+     <y>80</y>
+     <width>121</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>手写识别</string>
+    <string>清除</string>
    </property>
-  </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>200</y>
-     <width>581</width>
-     <height>411</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_handwriting">
-    <item>
-     <widget class="QWidget" name="widget_hwArea" native="true"/>
-    </item>
-   </layout>
   </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
@@ -71,6 +56,31 @@
        </property>
       </item>
      </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>-10</x>
+     <y>190</y>
+     <width>611</width>
+     <height>402</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QWidget" name="widget_hwArea" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>400</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QListWidget" name="listWidget"/>
     </item>
    </layout>
   </widget>
