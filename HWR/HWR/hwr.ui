@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="pushButton_clear">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>80</y>
+     <x>430</x>
+     <y>150</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>10</y>
+     <x>70</x>
+     <y>20</y>
      <width>431</width>
      <height>22</height>
     </rect>
@@ -62,14 +62,14 @@
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>-10</x>
+     <x>40</x>
      <y>190</y>
-     <width>611</width>
+     <width>511</width>
      <height>402</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
+    <item alignment="Qt::AlignTop">
      <widget class="QWidget" name="widget_hwArea" native="true">
       <property name="minimumSize">
        <size>
@@ -77,10 +77,23 @@
         <height>400</height>
        </size>
       </property>
+      <zorder>listWidget</zorder>
+      <zorder>listWidget</zorder>
      </widget>
     </item>
     <item>
-     <widget class="QListWidget" name="listWidget"/>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>【候选字】</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="listWidget"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

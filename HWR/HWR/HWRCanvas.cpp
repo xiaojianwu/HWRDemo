@@ -2,23 +2,9 @@
 #include <QDebug>
 #include <QPainter> /* QPainter */
 
-#include <QCoreApplication>
-
-
-
-
-
 size_t HWRCanvas::m_writor_width_fixed = 400;
 size_t HWRCanvas::m_writor_height_fixed = 400;
 int HWRCanvas::m_writor_pen_w_fixed = 4;
-
-
-
-
-#define __STLST_AL \
-	"background-color: #87cefa; color: #ff0000; font-weight: bold; " \
-	"border-radius: 8px"
-
 
 HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 	: QWidget(parent)
@@ -37,7 +23,7 @@ HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 
 
 	/* ready to recognize */
-	m_recogtimer.setInterval(2000);
+	m_recogtimer.setInterval(1000);
 	m_recogtimer.stop();
 	QObject::connect(&m_recogtimer, SIGNAL(timeout()), this, SLOT(recognize()));
 

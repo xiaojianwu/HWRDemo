@@ -23,8 +23,7 @@ HWR::HWR(QWidget *parent)
 	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index);
 	m_hwArea->setRecognizer(m_recognizer);
 	m_recognizer->init(m_options);
-
-	m_recognizer->init(m_options);
+	connect(m_recognizer, SIGNAL(recognizeResult(QStringList)), this, SLOT(onRecognizeResult(QStringList)));
 
 
 	connect(ui.pushButton_clear, SIGNAL(clicked()), this, SLOT(onClear()));
@@ -59,8 +58,6 @@ void HWR::onTypeChanged(int index)
 
 	
 }
-
-#define CANDIDATE_COUNT 5
 
 void HWR::onRecognizeResult(QStringList list)
 {
