@@ -54,7 +54,7 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 
 		int step = size / 10 + 1;
 		for (int i = 0; i < size; i += step) {
-			m_character->add(index, stroke.at(0).at(i).toFloat(), stroke.at(1).at(i).toFloat());
+			m_character->add(index, stroke.at(0).at(i), stroke.at(1).at(i));
 		}
 		index++;
 	}

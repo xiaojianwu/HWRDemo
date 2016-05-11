@@ -7,7 +7,7 @@
 #include <QPaintEvent>
 
 
-#include <QDialog>
+#include <QWidget>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -27,7 +27,7 @@
 
 #define SMOOTHING			6
 
-class HWRCanvas : public QDialog {
+class HWRCanvas : public QWidget {
 	Q_OBJECT
 
 public:
@@ -43,7 +43,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent * event);
 	void paintEvent(QPaintEvent * event);
 
-	void genbuttonstate(void);
+	
 
 
 
@@ -52,6 +52,9 @@ protected slots:
 	void turnpageup(void);
 	void turnpagedown(void);
 	void clear();
+	void genbuttonstate(void);
+
+	void onRecognizeResult(QStringList list);
 
 
 private:
@@ -69,7 +72,7 @@ private:
 
 
 	QTimer m_recogtimer;
-	QStringList dstr;
+	QStringList m_resultList;
 	int index;
 	int allpage;
 

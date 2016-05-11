@@ -4,6 +4,8 @@
 #include <QtWidgets/QWidget>
 #include "ui_hwr.h"
 
+#include "HWRCanvas.h"
+
 class HWR : public QWidget
 {
 	Q_OBJECT
@@ -21,6 +23,8 @@ private:
 	Ui::HWRClass ui;
 
 	int m_index;
+
+	HWRCanvas *m_hwArea;
 };
 
 #endif // HWR_H

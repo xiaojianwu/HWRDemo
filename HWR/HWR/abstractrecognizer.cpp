@@ -1,5 +1,7 @@
 #include "abstractrecognizer.h"
 
+#include <QDebug>
+
 AbstractRecognizer::AbstractRecognizer(QObject *parent)
 	: QObject(parent)
 {
@@ -42,15 +44,12 @@ bool AbstractRecognizer::init(QHash<QString, QString> options)
 
 QJsonArray AbstractRecognizer::pointsToJsonArray(XYPOINTS points)
 {
-
-	QVariant p;
-	p.fromValue(points);
-
-
 	QJsonArray x;
-	QVariantList vx;
-	vx.fromVector(points);
-	x.fromVariantList(vx);
+
+	for each (float point in points)
+	{
+		x.append(point);
+	}
 
 	return x;
 }

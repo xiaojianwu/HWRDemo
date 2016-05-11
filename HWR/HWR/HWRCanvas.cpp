@@ -12,6 +12,8 @@ size_t HWRCanvas::m_writor_width_fixed = 400;
 size_t HWRCanvas::m_writor_height_fixed = 400;
 int HWRCanvas::m_writor_pen_w_fixed = 4;
 
+#define CANDIDATE_COUNT 5
+
 
 #define __STLST_AL \
 	"background-color: #87cefa; color: #ff0000; font-weight: bold; " \
@@ -19,7 +21,7 @@ int HWRCanvas::m_writor_pen_w_fixed = 4;
 
 
 HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
-	: QDialog(parent), allpage(0), index(0)
+	: QWidget(parent), allpage(0), index(0)
 	, m_isDrawing(false)
 	, m_pCrntPath(NULL)
 {
@@ -35,6 +37,8 @@ HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 	candidate_layout = NULL;
 
 	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)hwrType);
+
+	connect(m_recognizer, SIGNAL(recognizeResult(QStringList)), this, SLOT(onRecognizeResult(QStringList)));
 
 
 	QHash<QString, QString> options;
@@ -88,7 +92,7 @@ HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 	option_layout->addWidget(down);
 
 	spacer = new QSpacerItem(36, 24);
-	this->option_layout->addItem(spacer);
+	option_layout->addItem(spacer);
 
 
 	m_btnClear = new QPushButton(tr("CLR"), this);
@@ -98,45 +102,45 @@ HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 	option_layout->addWidget(m_btnClear);
 
 	spacer = new QSpacerItem(36, 24);
-	this->option_layout->addItem(spacer);
+	option_layout->addItem(spacer);
 
-	this->option_layout->setAlignment(this->up,
+	option_layout->setAlignment(up,
 		Qt::AlignRight | Qt::AlignVCenter);
-	this->option_layout->setAlignment(this->down,
+	option_layout->setAlignment(down,
 		Qt::AlignRight | Qt::AlignVCenter);
 
-	this->option_layout->setAlignment(this->m_btnClear,
+	option_layout->setAlignment(m_btnClear,
 		Qt::AlignRight | Qt::AlignVCenter);
-	this->option_layout->setStretch(0, 1);
-	this->option_layout->setStretch(1, 1);
-	this->option_layout->setStretch(2, 1);
-	this->option_layout->setStretch(3, 1);
-	this->option_layout->setStretch(4, 1);
+	option_layout->setStretch(0, 1);
+	option_layout->setStretch(1, 1);
+	option_layout->setStretch(2, 1);
+	option_layout->setStretch(3, 1);
+	option_layout->setStretch(4, 1);
 
 	/*
-	this->option_layout->setStretch(0, 7);
-	this->option_layout->setStretch(1, 1);
+	option_layout->setStretch(0, 7);
+	option_layout->setStretch(1, 1);
 	*/
 
-	this->candidate_layout = new QHBoxLayout();
-	this->candidate_layout->setContentsMargins(5, 0, 5, 0);
+	candidate_layout = new QHBoxLayout();
+	candidate_layout->setContentsMargins(5, 0, 5, 0);
 	/* ready candidate_btns */
-	for (i = 0; i < 10; ++i) {
+	for (i = 0; i < CANDIDATE_COUNT; ++i) {
 		candidate_btns[i] = new QPushButton(this);
 		candidate_btns[i]->setFixedSize(36, 36);
 		candidate_btns[i]->setFont(font);
 		candidate_btns[i]->setStyleSheet(__STLST_AL);
-		this->candidate_layout->addWidget(candidate_btns[i]);
+		candidate_layout->addWidget(candidate_btns[i]);
 	}
 
-	this->writor_layout->addLayout(this->option_layout);
-	this->writor_layout->setAlignment(this->option_layout, Qt::AlignCenter);
+	writor_layout->addLayout(option_layout);
+	writor_layout->setAlignment(option_layout, Qt::AlignCenter);
 
-	master_layout->addLayout(this->writor_layout, 0);
-	master_layout->addLayout(this->candidate_layout, 1);
+	master_layout->addLayout(writor_layout, 0);
+	master_layout->addLayout(candidate_layout, 1);
 
-	for (i = 0; i < 10; ++i) {
-		this->candidate_layout->setAlignment(candidate_btns[i],
+	for (i = 0; i < CANDIDATE_COUNT; ++i) {
+		candidate_layout->setAlignment(candidate_btns[i],
 			Qt::AlignHCenter);
 	}
 
@@ -146,45 +150,41 @@ HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 
 	
 
-	this->genbuttonstate();
+	genbuttonstate();
 
 	return;
 
 }
 
 
-int HWRCanvas::destroy(void) {
-	//if (m_destroyed) {
-	//	return -1;
-	//}
+int HWRCanvas::destroy(void) 
+{
 
-	if (this->candidate_layout) {
-		QHBoxLayout * d = this->candidate_layout;
-		this->candidate_layout = NULL;
+	if (candidate_layout) {
+		QHBoxLayout * d = candidate_layout;
+		candidate_layout = NULL;
 		delete d;
 	}
 
-	if (this->option_layout) {
-		QVBoxLayout * d = this->option_layout;
-		this->option_layout = NULL;
+	if (option_layout) {
+		QVBoxLayout * d = option_layout;
+		option_layout = NULL;
 		delete d;
 	}
 
-	if (this->writor_layout) {
-		QHBoxLayout * d = this->writor_layout;
-		this->writor_layout = NULL;
+	if (writor_layout) {
+		QHBoxLayout * d = writor_layout;
+		writor_layout = NULL;
 		delete d;
 	}
 
-	if (this->master_layout) {
-		QVBoxLayout * d = this->master_layout;
-		this->master_layout = NULL;
+	if (master_layout) {
+		QVBoxLayout * d = master_layout;
+		master_layout = NULL;
 		delete d;
 	}
-
-	//this->m_destroyed = true;
 	return 0;
-} /* handwritor2::destroy */
+}
 
 
 void HWRCanvas::mousePressEvent(QMouseEvent *event) 
@@ -241,17 +241,25 @@ void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 	m_recogtimer.start();
 }
 
+
+void HWRCanvas::onRecognizeResult(QStringList list)
+{
+	m_resultList = list;
+	allpage = ((m_resultList.count() % CANDIDATE_COUNT) == 0) ? (m_resultList.count()) / CANDIDATE_COUNT : (m_resultList.count()) / CANDIDATE_COUNT + 1;
+	genbuttonstate();
+}
+
 void HWRCanvas::genbuttonstate(void) {
-	this->up->hide();
-	this->down->hide();
-	for (int i = 0; i < 10; i++) {
+	up->hide();
+	down->hide();
+	for (int i = 0; i < CANDIDATE_COUNT; i++) {
 		candidate_btns[i]->hide();
 		if (index < allpage) {
-			if (index * 10 + i < dstr.count()) {
-				candidate_btns[i]->setText(dstr[index * 10 + i]);
+			if (index * CANDIDATE_COUNT + i < m_resultList.count()) {
+				candidate_btns[i]->setText(m_resultList[index * CANDIDATE_COUNT + i]);
 				candidate_btns[i]->show();
-				this->up->show();
-				this->down->show();
+				up->show();
+				down->show();
 			}
 		}
 	}
@@ -280,12 +288,12 @@ void HWRCanvas::recognize()
 
 	index = 0;
 
-	dstr = m_recognizer->recognize(trace);
+	m_resultList = m_recognizer->recognize(trace);
 
 	trace.clear();
 
 	//向上取整,实现方法
-	allpage = ((dstr.count() % 10) == 0) ? (dstr.count()) / 10 : (dstr.count()) / 10 + 1;
+	allpage = ((m_resultList.count() % CANDIDATE_COUNT) == 0) ? (m_resultList.count()) / CANDIDATE_COUNT : (m_resultList.count()) / CANDIDATE_COUNT + 1;
 	genbuttonstate();
 	update();
 }
@@ -337,16 +345,16 @@ void HWRCanvas::generateCurrentPath()
 				int dx, dy;
 				if (i >= 0) {
 					if (i == 0) {
-						dx = ((handwritingX.at(i + 1).toFloat() - handwritingX.at(i).toFloat()) / SMOOTHING);
-						dy = ((handwritingY.at(i + 1).toFloat() - handwritingY.at(i).toFloat()) / SMOOTHING);
+						dx = ((handwritingX.at(i + 1) - handwritingX.at(i)) / SMOOTHING);
+						dy = ((handwritingY.at(i + 1) - handwritingY.at(i)) / SMOOTHING);
 					}
 					else if (i == handwritingX.size() - 1) {
-						dx = ((handwritingX.at(i).toFloat() - handwritingX.at(i - 1).toFloat()) / SMOOTHING);
-						dy = ((handwritingY.at(i).toFloat() - handwritingY.at(i - 1).toFloat()) / SMOOTHING);
+						dx = ((handwritingX.at(i) - handwritingX.at(i - 1)) / SMOOTHING);
+						dy = ((handwritingY.at(i) - handwritingY.at(i - 1)) / SMOOTHING);
 					}
 					else {
-						dx = ((handwritingX.at(i + 1).toFloat() - handwritingX.at(i - 1).toFloat()) / SMOOTHING);
-						dy = ((handwritingY.at(i + 1).toFloat() - handwritingY.at(i - 1).toFloat()) / SMOOTHING);
+						dx = ((handwritingX.at(i + 1) - handwritingX.at(i - 1)) / SMOOTHING);
+						dy = ((handwritingY.at(i + 1) - handwritingY.at(i - 1)) / SMOOTHING);
 					}
 				}
 			}
@@ -355,15 +363,15 @@ void HWRCanvas::generateCurrentPath()
 
 	bool first = true;
 	for (int i = 0; i < handwritingX.size(); i++) {
-		float x = handwritingX.at(i).toFloat();
-		float y = handwritingY.at(i).toFloat();
+		float x = handwritingX.at(i);
+		float y = handwritingY.at(i);
 		if (first) {
 			first = false;
 			m_pCrntPath->moveTo(x, y);
 		}
 		else {
-			float prevX = handwritingX.at(i - 1).toFloat();
-			float prevY = handwritingY.at(i - 1).toFloat();
+			float prevX = handwritingX.at(i - 1);
+			float prevY = handwritingY.at(i - 1);
 
 			m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
 		}

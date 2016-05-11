@@ -1,6 +1,6 @@
 #include "hwr.h"
 
-#include "HWRCanvas.h"
+#include "abstractrecognizer.h"
 
 HWR::HWR(QWidget *parent)
 	: QWidget(parent)
@@ -11,6 +11,8 @@ HWR::HWR(QWidget *parent)
 	connect(ui.pushButton, SIGNAL(clicked()), this, SLOT(onStartHWR()));
 
 	connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(int)));
+
+	m_hwArea = new HWRCanvas(m_index, ui.widget_hwArea);
 }
 
 HWR::~HWR()

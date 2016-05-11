@@ -12,9 +12,9 @@
 #include <QJsonArray>
 
 
-typedef QVector<QVariant> XYPOINTS;
-typedef QVector<XYPOINTS> STROKE;
-typedef QVector<STROKE> STROKES;
+typedef QList<float> XYPOINTS;
+typedef QList<XYPOINTS> STROKE;
+typedef QList<STROKE> STROKES;
 
 class AbstractRecognizer : public QObject
 {
@@ -34,6 +34,9 @@ public:
 	static const QString OPTION_KEY_CANVAS_HEIGHT;
 
 	static QJsonArray pointsToJsonArray(XYPOINTS points);
+
+signals:
+	void recognizeResult(QStringList result);
 
 protected:
 

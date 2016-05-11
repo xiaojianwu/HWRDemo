@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>630</width>
+    <height>660</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>270</y>
+     <x>0</x>
+     <y>40</y>
      <width>201</width>
      <height>61</height>
     </rect>
@@ -26,11 +26,26 @@
     <string>手写识别</string>
    </property>
   </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>200</y>
+     <width>581</width>
+     <height>411</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_handwriting">
+    <item>
+     <widget class="QWidget" name="widget_hwArea" native="true"/>
+    </item>
+   </layout>
+  </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>120</y>
+     <x>0</x>
+     <y>10</y>
      <width>431</width>
      <height>22</height>
     </rect>
