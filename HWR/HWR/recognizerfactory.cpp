@@ -4,6 +4,8 @@
 #include "zinnarecognizer.h"
 #include "googlerecognizer.h"
 
+#include "hanvonrecognizer.h"
+
 RecognizerFactory* RecognizerFactory::instance = nullptr;
 RecognizerFactory::RecognizerFactory()
 {
@@ -27,6 +29,9 @@ AbstractRecognizer* RecognizerFactory::getRecognizer(HWR_TYPE type)
 			break;
 		case RecognizerFactory::HWR_TYPE_GOOGLE_INPUT_TOOLS:
 			hwr = new GoogleRecognizer(this);
+			break;
+		case RecognizerFactory::HWR_TYPE_HANVON:
+			hwr = new HanvonRecognizer(this);
 			break;
 		default:
 			break;

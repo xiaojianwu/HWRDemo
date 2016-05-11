@@ -98,8 +98,6 @@ void HWRCanvas::recognize()
 	m_isDrawing = false;
 
 	m_recognizer->recognize(m_strokes);
-
-	update();
 }
 
 void HWRCanvas::paintEvent(QPaintEvent *event)
@@ -143,7 +141,7 @@ void HWRCanvas::clear() {
 	}
 	m_lPreviousPath.clear();
 
-
+	// m_pCrntPath已经被包含在m_lPreviousPath中
 	m_pCrntPath = NULL;
 
 	update();
