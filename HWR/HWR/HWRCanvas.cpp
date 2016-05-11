@@ -2,9 +2,9 @@
 #include <QDebug>
 #include <QPainter> /* QPainter */
 
-size_t HWRCanvas::m_writor_width_fixed = 400;
-size_t HWRCanvas::m_writor_height_fixed = 400;
-int HWRCanvas::m_writor_pen_w_fixed = 4;
+size_t HWRCanvas::CANVAS_WIDTH = 400;
+size_t HWRCanvas::CANVAS_HEIGHT = 400;
+int HWRCanvas::PEN_SIZE = 4;
 
 HWRCanvas::HWRCanvas(QWidget * parent)
 	: QWidget(parent)
@@ -13,7 +13,7 @@ HWRCanvas::HWRCanvas(QWidget * parent)
 	, m_recognizer(nullptr)
 {
 	setContentsMargins(0, 0, 0, 0);
-	setFixedSize(m_writor_width_fixed, m_writor_height_fixed);
+	setFixedSize(CANVAS_WIDTH, CANVAS_HEIGHT);
 	setAutoFillBackground(true);
 
 	QPalette palette;
@@ -32,13 +32,13 @@ void HWRCanvas::mousePressEvent(QMouseEvent *event)
 	{
 		m_isDrawing = true;
 
-		handwritingX.clear();
-		handwritingY.clear();
+		m_handwritingX.clear();
+		m_handwritingY.clear();
 
-		w.clear();
+		m_currentStroke.clear();
 
-		handwritingX << event->localPos().x();
-		handwritingY << event->localPos().y();
+		m_handwritingX << event->localPos().x();
+		m_handwritingY << event->localPos().y();
 
 		m_pCrntPath = new QPainterPath();
 		m_pCrntPath->moveTo(event->localPos().x(), event->localPos().y());
@@ -52,13 +52,13 @@ void HWRCanvas::mouseMoveEvent(QMouseEvent *event)
 		float x = event->localPos().x();
 		float y = event->localPos().y();
 
-		float prevX = handwritingX.at(handwritingX.size() - 1);
-		float prevY = handwritingY.at(handwritingY.size() - 1);
+		float prevX = m_handwritingX.at(m_handwritingX.size() - 1);
+		float prevY = m_handwritingY.at(m_handwritingY.size() - 1);
 
 		m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
 
-		handwritingX << x;
-		handwritingY << y;
+		m_handwritingX << x;
+		m_handwritingY << y;
 
 		update();
 	}
@@ -75,8 +75,8 @@ void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 	float x = event->localPos().x();
 	float y = event->localPos().y();
 
-	float prevX = handwritingX.at(handwritingX.size() - 1);
-	float prevY = handwritingY.at(handwritingY.size() - 1);
+	float prevX = m_handwritingX.at(m_handwritingX.size() - 1);
+	float prevY = m_handwritingY.at(m_handwritingY.size() - 1);
 
 	m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
 
@@ -84,20 +84,20 @@ void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 
 	update();
 
-	w << handwritingX << handwritingY;
-	trace << w;
+	m_currentStroke << m_handwritingX << m_handwritingY;
+	m_strokes << m_currentStroke;
 
 	recognize();
 
-	handwritingX.clear();
-	handwritingY.clear();
+	m_handwritingX.clear();
+	m_handwritingY.clear();
 }
 
 void HWRCanvas::recognize()
 {
 	m_isDrawing = false;
 
-	m_recognizer->recognize(trace);
+	m_recognizer->recognize(m_strokes);
 
 	update();
 }
@@ -111,12 +111,11 @@ void HWRCanvas::paintEvent(QPaintEvent *event)
 	QPen pen_b;
 	pen_b.setStyle(Qt::DotLine);
 	p->setPen(pen_b);
-	p->drawLine(0, m_writor_height_fixed / 2, m_writor_width_fixed, m_writor_height_fixed / 2);
-	/* | */
-	p->drawLine(m_writor_width_fixed / 2, 0, m_writor_width_fixed / 2, m_writor_height_fixed);
+	p->drawLine(0, CANVAS_HEIGHT / 2, CANVAS_WIDTH, CANVAS_HEIGHT / 2);
+	p->drawLine(CANVAS_WIDTH / 2, 0, CANVAS_WIDTH / 2, CANVAS_HEIGHT);
 
 	QPen pen;
-	pen.setWidth(m_writor_pen_w_fixed);
+	pen.setWidth(PEN_SIZE);
 	p->setPen(pen);
 
 	foreach(QPainterPath* path, m_lPreviousPath) {
@@ -133,10 +132,10 @@ void HWRCanvas::paintEvent(QPaintEvent *event)
 }
 
 void HWRCanvas::clear() {
-	handwritingX.clear();
-	handwritingY.clear();
+	m_handwritingX.clear();
+	m_handwritingY.clear();
 
-	trace.clear();
+	m_strokes.clear();
 
 	for each (QPainterPath* path in m_lPreviousPath)
 	{

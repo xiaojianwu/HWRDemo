@@ -42,20 +42,20 @@ private:
 	QList<QPainterPath>  m_paths;
 	QPainterPath		   m_currcentPath;
 
-	XYPOINTS handwritingX;
-	XYPOINTS handwritingY;
+	XYPOINTS m_handwritingX;
+	XYPOINTS m_handwritingY;
 
-	STROKE w;
-	STROKES trace;
+	STROKE m_currentStroke;
+	STROKES m_strokes;
 
 	QPainterPath* m_pCrntPath;
 	QList<QPainterPath*> m_lPreviousPath;
 
 	AbstractRecognizer* m_recognizer;
 
-	static size_t m_writor_width_fixed;
-	static size_t m_writor_height_fixed;
-	static int m_writor_pen_w_fixed;
+	static size_t CANVAS_WIDTH;
+	static size_t CANVAS_HEIGHT;
+	static int PEN_SIZE;
 
 	bool m_isDrawing;
 };
