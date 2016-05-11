@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-
+#pragma comment(lib, "libzinnia.lib")
 
 
 ZinnaRecognizer::ZinnaRecognizer(QObject *parent)
@@ -47,7 +47,7 @@ bool ZinnaRecognizer::init(QHash<QString, QString> options)
 		return false;
 	}
 
-	
+
 
 
 	return true;
@@ -68,10 +68,10 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 	int yOrigin = 0;
 
 	int index = 0;
-	foreach (STROKE stroke, strokes) {
+	foreach(STROKE stroke, strokes) {
 		int size = stroke.at(0).size();
 
-		int step =  size / 10 + 1;
+		int step = size / 10 + 1;
 		for (int i = 0; i < size; i += step) {
 			m_character->add(index, stroke.at(0).at(i), stroke.at(1).at(i));
 		}
@@ -80,9 +80,7 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 
 	zinnia::Result *result = m_recognizer->classify(*m_character, 100);
 
-	
 	if (!result) {
-		std::string err = m_recognizer->what();
 		qDebug() << QString::fromUtf8(m_recognizer->what());
 	}
 	else {
@@ -95,7 +93,7 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 		delete result;
 	}
 
-	
+
 	delete m_character;
 
 	return dstr;

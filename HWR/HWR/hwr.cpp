@@ -1,10 +1,6 @@
 #include "hwr.h"
 
-#include "StrokesRecognizer.h"
-#include "handwritor.h"
 #include "HWRCanvas.h"
-
-#include "hwrpaint.h"
 
 HWR::HWR(QWidget *parent)
 	: QWidget(parent)
@@ -29,7 +25,7 @@ void HWR::onOne()
 	//w->show();
 
 
-	HWRCanvas *hw = new HWRCanvas(NULL, NULL, NULL, NULL, NULL);
+	HWRCanvas *hw = new HWRCanvas(this);
 	hw->show();
 
 
@@ -40,6 +36,6 @@ void HWR::onTwo()
 {
 	//handwritor_debug* hw = new handwritor_debug;
 	// hw.setGeometry(200, 200, 300, 300);
-	handwritor *hw = new handwritor(NULL, NULL, NULL, NULL, NULL);
-	hw->show();
+	//handwritor *hw = new handwritor(NULL, NULL, NULL, NULL, NULL);
+	//hw->show();
 }

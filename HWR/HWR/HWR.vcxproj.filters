@@ -50,45 +50,6 @@
     <ClCompile Include="GeneratedFiles\qrc_hwr.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="Recognizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SmoothCanvas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_SmoothCanvas.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_SmoothCanvas.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="StrokesRecognizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_StrokesRecognizer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_StrokesRecognizer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="handwritor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_handwritor.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_handwritor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="hwrpaint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_hwrpaint.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_hwrpaint.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="abstractrecognizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -136,21 +97,6 @@
     <CustomBuild Include="hwr.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="SmoothCanvas.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="StrokesRecognizer.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="handwritor.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hwrpaint.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hwrpaint.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="abstractrecognizer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -166,18 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_hwr.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Recognizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SGlobals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LineStroke.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_hwrpaint.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

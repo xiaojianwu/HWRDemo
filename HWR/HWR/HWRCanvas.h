@@ -3,22 +3,21 @@
 
 
 #include <QtCore/QTimer>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPaintEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 
-#	include <QtWidgets/QWidget>
-#	include <QtWidgets/QPushButton>
-#	include <QtWidgets/QHBoxLayout>
-#	include <QtWidgets/QVBoxLayout>
+#include <QWidget>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 
 #include <QList>
 
+#include <QPen>
 
-//#include <zinnia.h> /* zinnia_character_t .. */
-#include "LineStroke.h" /* class LineStroke */
-
+#include <QPainterPath>
 
 #include "abstractrecognizer.h"
 
@@ -26,26 +25,20 @@
 #define handwritor2_MODEL_DFT "handwriting-zh_CN.model"
 #define handwritor2_ERR_MIN (64)
 
-
+#define SMOOTHING			6
 
 class HWRCanvas : public QWidget {
 	Q_OBJECT
 
 		/* err min handwritor2_ERR_MIN */
 public:
-	HWRCanvas(int * ret, char * err, QWidget * focus,
-		const char * model = 0, QWidget * parent = 0);
+	HWRCanvas(QWidget * parent = 0);
 	~HWRCanvas(void) { destroy(); }
 	int destroy(void);
-	bool is_destroyed(void) { return m_destroyed; }
-	
 
-
-signals:
-	void routestring(QChar c);/* 向其他窗口传递QChar */
 
 	/* evt */
-	protected:
+protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
 	void mouseReleaseEvent(QMouseEvent * event);
@@ -53,16 +46,17 @@ signals:
 
 	void genbuttonstate(void);
 
-	void append_stroke(LineStroke& stroke);
-	
 
 
-
-	protected slots:
+protected slots:
 	void recognize(void);
 	void turnpageup(void);
 	void turnpagedown(void);
-	void chooseQchar(void);
+	void clear();
+
+
+private:
+	void generateCurrentPath();
 
 private:
 	QVBoxLayout * master_layout;
@@ -72,13 +66,14 @@ private:
 	QPushButton* candidate_btns[10];
 	QPushButton *up;
 	QPushButton *down;
+	QPushButton *m_btnClear;
+
+
 	QTimer m_recogtimer;
 	QStringList dstr;
 	int index;
 	int allpage;
 
-	LineStroke m_currentstroke;
-	QVector<LineStroke>  m_strokes;
 
 	QList<QPainterPath>  m_paths;
 	QPainterPath		   m_currcentPath;
@@ -91,8 +86,11 @@ private:
 
 
 
-	//zinnia_character_t * m_character;
-	//zinnia_recognizer_t * m_recognizer;
+	QPainterPath* m_pCrntPath;
+	QList<QPainterPath*> m_lPreviousPath;
+
+	QPen m_pen;
+	QBrush m_brush;
 
 
 	AbstractRecognizer* m_recognizer;
@@ -101,7 +99,7 @@ private:
 	static size_t m_writor_height_fixed;
 	static int m_writor_pen_w_fixed;
 
-	bool m_destroyed;
+	//bool m_destroyed;
 
 	bool m_isDrawing;
 }; /* class handwritor2 */

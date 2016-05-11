@@ -1,7 +1,7 @@
 #include <iostream> /* std .. */
 #include "HWRCanvas.h" /* class handwritor2 */
-#include <QtCore/QDebug>
-#include <QtGui/QPainter> /* QPainter */
+#include <QDebug>
+#include <QPainter> /* QPainter */
 
 #include <QCoreApplication>
 
@@ -19,10 +19,10 @@ int HWRCanvas::m_writor_pen_w_fixed = 4;
 	"border-radius: 8px"
 
 
-HWRCanvas::HWRCanvas(int * ret, char * err, QWidget * focus,
-	const char * model, QWidget * parent)
+HWRCanvas::HWRCanvas(QWidget * parent)
 	: QWidget(parent), allpage(0), index(0) 
 	, m_isDrawing(false)
+	, m_pCrntPath(NULL)
 {
 
 	int i, open_result;
@@ -31,7 +31,7 @@ HWRCanvas::HWRCanvas(int * ret, char * err, QWidget * focus,
 	QPalette palette;
 	QFont font;
 
-	m_destroyed = false;
+	//m_destroyed = false;
 
 	writor_layout = NULL;
 	option_layout = NULL;
@@ -93,9 +93,22 @@ HWRCanvas::HWRCanvas(int * ret, char * err, QWidget * focus,
 	spacer = new QSpacerItem(36, 24);
 	this->option_layout->addItem(spacer);
 
+
+	m_btnClear = new QPushButton(tr("CLR"), this);
+	m_btnClear->setFixedSize(36, 36);
+	m_btnClear->setFont(font);
+	m_btnClear->setStyleSheet(__STLST_AL);
+	option_layout->addWidget(m_btnClear);
+
+	spacer = new QSpacerItem(36, 24);
+	this->option_layout->addItem(spacer);
+
 	this->option_layout->setAlignment(this->up,
 		Qt::AlignRight | Qt::AlignVCenter);
 	this->option_layout->setAlignment(this->down,
+		Qt::AlignRight | Qt::AlignVCenter);
+
+	this->option_layout->setAlignment(this->m_btnClear,
 		Qt::AlignRight | Qt::AlignVCenter);
 	this->option_layout->setStretch(0, 1);
 	this->option_layout->setStretch(1, 1);
@@ -130,12 +143,11 @@ HWRCanvas::HWRCanvas(int * ret, char * err, QWidget * focus,
 			Qt::AlignHCenter);
 	}
 
-	for (i = 0; i < 10; ++i) {
-		QObject::connect(candidate_btns[i], SIGNAL(clicked()), this,
-			SLOT(chooseQchar()));
-	}
 	QObject::connect(up, SIGNAL(clicked()), this, SLOT(turnpageup()));
 	QObject::connect(down, SIGNAL(clicked()), this, SLOT(turnpagedown()));
+	QObject::connect(m_btnClear, SIGNAL(clicked()), this, SLOT(clear()));
+
+	
 
 	this->genbuttonstate();
 
@@ -145,9 +157,9 @@ HWRCanvas::HWRCanvas(int * ret, char * err, QWidget * focus,
 
 
 int HWRCanvas::destroy(void) {
-	if (m_destroyed) {
-		return -1;
-	}
+	//if (m_destroyed) {
+	//	return -1;
+	//}
 
 	if (this->candidate_layout) {
 		QHBoxLayout * d = this->candidate_layout;
@@ -173,94 +185,63 @@ int HWRCanvas::destroy(void) {
 		delete d;
 	}
 
-	this->m_destroyed = true;
+	//this->m_destroyed = true;
 	return 0;
 } /* handwritor2::destroy */
 
 
-void HWRCanvas::mousePressEvent(QMouseEvent *event) {
+void HWRCanvas::mousePressEvent(QMouseEvent *event) 
+{
 	if (!m_isDrawing)
 	{
-		m_strokes.clear();
-		update();
-	}
-	m_isDrawing = true;
-	m_recogtimer.stop();
+		m_isDrawing = true;
+		m_recogtimer.stop();
 
-	handwritingX.clear();
-	handwritingY.clear();
+		handwritingX.clear();
+		handwritingY.clear();
 
-	w.clear();
-	
-
-	handwritingX << event->localPos().x();
-	handwritingY << event->localPos().y();
-
-	foreach(QPoint* point, m_currentstroke.points)
-		delete point;
-	m_currentstroke.points.clear();
-
-	m_currentstroke.segments = 1;
-	QPoint* point = new QPoint;
-	point->setX(event->x());
-	point->setY(event->y());
-	m_currentstroke.points.append(point);
-}
-void HWRCanvas::mouseMoveEvent(QMouseEvent *event)
-{
-	static int count = 0;
-	if (m_isDrawing) // 鼠标按下状态
-	{
-		QPoint* point = new QPoint;
-		point->setX(event->x());
-		point->setY(event->y());
-		m_currentstroke.points.append(point);
-		m_currentstroke.segments++;
+		w.clear();
 
 
 		handwritingX << event->localPos().x();
 		handwritingY << event->localPos().y();
-	}
-	count++;
-	if (count % 10 == 0)
+
+		generateCurrentPath();
 		update();
+	}
+}
+void HWRCanvas::mouseMoveEvent(QMouseEvent *event)
+{
+	if (m_isDrawing) // 鼠标按下状态
+	{
+		handwritingX << event->localPos().x();
+		handwritingY << event->localPos().y();
+
+		generateCurrentPath();
+		update();
+	}
+
 }
 
 void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (!m_isDrawing)
 		return;
-	append_stroke(m_currentstroke);
+
+	m_isDrawing = false;
+
+	generateCurrentPath();
+	m_lPreviousPath << m_pCrntPath;
+
 	update();
 
 	w << handwritingX << handwritingY;
-
 	trace << w;
-	
 
-	m_currentstroke.segments = 0;
-	foreach(QPoint* point, m_currentstroke.points)
-		delete point;
-	m_currentstroke.points.clear();
+	handwritingX.clear();
+	handwritingY.clear();
 
 	m_recogtimer.start();
-}
-
-void HWRCanvas::append_stroke(LineStroke& stroke)
-{
-	LineStroke s;
-	s.segments = stroke.segments;
-	if (stroke.segments)
-	{
-		for (int i = 0; i < stroke.points.count(); i++)
-		{
-			QPoint* point = new QPoint;
-			point->setX(stroke.points[i]->x());
-			point->setY(stroke.points[i]->y());
-			s.points.append(point);
-		}
-		m_strokes.append(stroke);
-	}
 }
 
 void HWRCanvas::genbuttonstate(void) {
@@ -294,36 +275,12 @@ void HWRCanvas::turnpagedown()
 	genbuttonstate();
 }
 
-void HWRCanvas::chooseQchar(void) {
-	static QString chose;
-
-	/*
-	QPushButton* push=static_cast<QPushButton *>(sender());
-	emit routestring(push->text()[0]);
-	*/
-
-	QPushButton * b = static_cast<QPushButton *>(sender());
-	chose.clear();
-	chose = b->text();
-	emit routestring(chose[0]);
-	// std::cout << "SELECTED:" << chose.toLocal8Bit().data() << std::endl;
-	fprintf(stdout, "SELECTED: %s\n", chose.toUtf8().data());
-	fflush(stdout);
-
-	this->up->hide();
-	this->down->hide();
-	for (int i = 0; i < 10; i++) {
-		candidate_btns[i]->hide();
-	}
-} /* handwritor2::chooseQchar */
-
 void HWRCanvas::recognize()
 {
 	m_recogtimer.stop();
 
 	m_isDrawing = false;
 
-	m_strokes.clear();
 	index = 0;
 
 	dstr = m_recognizer->recognize(trace);
@@ -338,54 +295,105 @@ void HWRCanvas::recognize()
 
 void HWRCanvas::paintEvent(QPaintEvent *event)
 {
-	QPainter painter(this);
+	QPainter* p = new QPainter();
 
-	/*
-	painter.drawLine(0, 125, 250, 125);
-	painter.drawLine(125, 0, 125, 250);
-	*/
-	/* - */
+	p->begin(this);
+
 	QPen pen_b;
 	pen_b.setStyle(Qt::DotLine);
-	painter.setPen(pen_b);
-	painter.drawLine(0, HWRCanvas::m_writor_height_fixed / 2,
-		HWRCanvas::m_writor_width_fixed, HWRCanvas::m_writor_height_fixed / 2);
+	p->setPen(pen_b);
+	p->drawLine(0, m_writor_height_fixed / 2, m_writor_width_fixed, m_writor_height_fixed / 2);
 	/* | */
-	painter.drawLine(HWRCanvas::m_writor_width_fixed / 2, 0,
-		HWRCanvas::m_writor_width_fixed / 2, HWRCanvas::m_writor_height_fixed);
+	p->drawLine(m_writor_width_fixed / 2, 0, m_writor_width_fixed / 2, m_writor_height_fixed);
+
+	// Draw the cache
+	//if (NULL != m_pCache) {
+	//	p->drawPixmap(QPoint(), *m_pCache);
+	//}
+
 
 	QPen pen;
-	pen.setWidth(HWRCanvas::m_writor_pen_w_fixed);
-	painter.setPen(pen);
+	pen.setWidth(m_writor_pen_w_fixed);
+	p->setPen(pen);
 
-	// painter.save();
-	// painter.restore();
 
-	LineStroke *cl;
-	// 已经录入的笔画
-	for (int i = 0; i < m_strokes.count(); i++) {
-		cl = &m_strokes[i];
-
-		for (int j = 0; j + 4 < cl->segments; j += 4) {
-			painter.drawLine((float)cl->points[j]->x(),
-				(float)cl->points[j]->y(),
-				(float)cl->points[j + 4]->x(),
-				(float)cl->points[j + 4]->y());
+	foreach(QPainterPath* path, m_lPreviousPath) {
+		if (NULL != path) {
+			p->drawPath(*path);
 		}
 	}
 
-	// 当下笔画
-	if (m_currentstroke.segments &&m_currentstroke.points[0]) {
-		for (int j = 0; j + 4 < m_currentstroke.segments; j += 4) {
-			painter.drawLine((float)m_currentstroke.points[j]->x(),
-				(float)m_currentstroke.points[j]->y(),
-				(float)m_currentstroke.points[j + 4]->x(),
-				(float)m_currentstroke.points[j + 4]->y());
+	// Draw the current path
+	if (NULL != m_pCrntPath) {
+		p->drawPath(*m_pCrntPath);
+	}
+	p->end();
+}
+
+
+
+void HWRCanvas::generateCurrentPath() 
+{
+	// TODO 内存泄漏
+	//if (m_pCrntPath && m_isDrawing)
+	//{
+	//	delete m_pCrntPath;
+	//	m_pCrntPath = NULL;
+	//}
+	m_pCrntPath = new QPainterPath();
+	if (!handwritingX.empty()) {
+		if (handwritingX.size() > 1) {
+			for (int i = handwritingX.size() - 2; i < handwritingX.size(); i++) {
+				int dx, dy;
+				if (i >= 0) {
+					if (i == 0) {
+						dx = ((handwritingX.at(i + 1) - handwritingX.at(i)) / SMOOTHING);
+						dy = ((handwritingY.at(i + 1) - handwritingY.at(i)) / SMOOTHING);
+					}
+					else if (i == handwritingX.size() - 1) {
+						dx = ((handwritingX.at(i) - handwritingX.at(i - 1)) / SMOOTHING);
+						dy = ((handwritingY.at(i) - handwritingY.at(i - 1)) / SMOOTHING);
+					}
+					else {
+						dx = ((handwritingX.at(i + 1) - handwritingX.at(i - 1)) / SMOOTHING);
+						dy = ((handwritingY.at(i + 1) - handwritingY.at(i - 1)) / SMOOTHING);
+					}
+				}
+			}
+		}
+	}
+
+	bool first = true;
+	for (int i = 0; i < handwritingX.size(); i++) {
+		float x = handwritingX.at(i);
+		float y = handwritingY.at(i);
+		if (first) {
+			first = false;
+			m_pCrntPath->moveTo(x, y);
+		}
+		else {
+			float prevX = handwritingX.at(i - 1);
+			float prevY = handwritingY.at(i - 1);
+
+			m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
 		}
 	}
 }
 
 
-/*
- * end of file handwritor2.cpp
- */
+
+void HWRCanvas::clear() {
+	handwritingX.clear();
+	handwritingY.clear();
+
+	for each (QPainterPath* path in m_lPreviousPath)
+	{
+		delete path;
+	}
+	m_lPreviousPath.clear();
+
+
+	m_pCrntPath = NULL;
+
+	update();
+}
