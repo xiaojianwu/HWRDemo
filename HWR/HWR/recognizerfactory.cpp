@@ -2,6 +2,7 @@
 
 
 #include "zinnarecognizer.h"
+#include "googlerecognizer.h"
 
 RecognizerFactory* RecognizerFactory::instance = nullptr;
 RecognizerFactory::RecognizerFactory()
@@ -25,6 +26,7 @@ AbstractRecognizer* RecognizerFactory::getRecognizer(HWR_TYPE type)
 			hwr = new ZinnaRecognizer(this);
 			break;
 		case RecognizerFactory::HWR_TYPE_GOOGLE_INPUT_TOOLS:
+			hwr = new GoogleRecognizer(this);
 			break;
 		default:
 			break;

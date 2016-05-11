@@ -18,10 +18,6 @@ public:
 	virtual QStringList recognize(STROKES strokes);
 
 private:
-	QString	m_modelPath;
-	float	m_canvasWidth;
-	float	m_canvasHeight;
-
 	zinnia::Recognizer *m_recognizer;
 	zinnia::Character *m_character;
 	

@@ -337,16 +337,16 @@ void HWRCanvas::generateCurrentPath()
 				int dx, dy;
 				if (i >= 0) {
 					if (i == 0) {
-						dx = ((handwritingX.at(i + 1) - handwritingX.at(i)) / SMOOTHING);
-						dy = ((handwritingY.at(i + 1) - handwritingY.at(i)) / SMOOTHING);
+						dx = ((handwritingX.at(i + 1).toFloat() - handwritingX.at(i).toFloat()) / SMOOTHING);
+						dy = ((handwritingY.at(i + 1).toFloat() - handwritingY.at(i).toFloat()) / SMOOTHING);
 					}
 					else if (i == handwritingX.size() - 1) {
-						dx = ((handwritingX.at(i) - handwritingX.at(i - 1)) / SMOOTHING);
-						dy = ((handwritingY.at(i) - handwritingY.at(i - 1)) / SMOOTHING);
+						dx = ((handwritingX.at(i).toFloat() - handwritingX.at(i - 1).toFloat()) / SMOOTHING);
+						dy = ((handwritingY.at(i).toFloat() - handwritingY.at(i - 1).toFloat()) / SMOOTHING);
 					}
 					else {
-						dx = ((handwritingX.at(i + 1) - handwritingX.at(i - 1)) / SMOOTHING);
-						dy = ((handwritingY.at(i + 1) - handwritingY.at(i - 1)) / SMOOTHING);
+						dx = ((handwritingX.at(i + 1).toFloat() - handwritingX.at(i - 1).toFloat()) / SMOOTHING);
+						dy = ((handwritingY.at(i + 1).toFloat() - handwritingY.at(i - 1).toFloat()) / SMOOTHING);
 					}
 				}
 			}
@@ -355,15 +355,15 @@ void HWRCanvas::generateCurrentPath()
 
 	bool first = true;
 	for (int i = 0; i < handwritingX.size(); i++) {
-		float x = handwritingX.at(i);
-		float y = handwritingY.at(i);
+		float x = handwritingX.at(i).toFloat();
+		float y = handwritingY.at(i).toFloat();
 		if (first) {
 			first = false;
 			m_pCrntPath->moveTo(x, y);
 		}
 		else {
-			float prevX = handwritingX.at(i - 1);
-			float prevY = handwritingY.at(i - 1);
+			float prevX = handwritingX.at(i - 1).toFloat();
+			float prevY = handwritingY.at(i - 1).toFloat();
 
 			m_pCrntPath->cubicTo(prevX, prevY, x, y, x, y);
 		}

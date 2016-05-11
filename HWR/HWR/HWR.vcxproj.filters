@@ -86,6 +86,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_HWRCanvas.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="googlerecognizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_googlerecognizer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_googlerecognizer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="hwr.h">
@@ -107,6 +116,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="HWRCanvas.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="googlerecognizer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

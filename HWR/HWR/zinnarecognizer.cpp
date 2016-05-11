@@ -21,34 +21,15 @@ ZinnaRecognizer::~ZinnaRecognizer()
 
 bool ZinnaRecognizer::init(QHash<QString, QString> options)
 {
+
+	AbstractRecognizer::init(options);
+
 	m_recognizer = zinnia::Recognizer::create();
-
-	if (!options.contains(OPTION_KEY_MODEL_PATH))
-	{
-		return false;
-	}
-	m_modelPath = options[OPTION_KEY_MODEL_PATH];
-
-	if (!options.contains(OPTION_KEY_CANVAS_WIDTH))
-	{
-		return false;
-	}
-	m_canvasWidth = options[OPTION_KEY_CANVAS_WIDTH].toFloat();
-
-	if (!options.contains(OPTION_KEY_CANVAS_HEIGHT))
-	{
-		return false;
-	}
-	m_canvasHeight = options[OPTION_KEY_CANVAS_HEIGHT].toFloat();
-
 
 	if (!m_recognizer->open(m_modelPath.toStdString().c_str())) {
 		qDebug() << m_recognizer->what();
 		return false;
 	}
-
-
-
 
 	return true;
 }
@@ -73,7 +54,7 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 
 		int step = size / 10 + 1;
 		for (int i = 0; i < size; i += step) {
-			m_character->add(index, stroke.at(0).at(i), stroke.at(1).at(i));
+			m_character->add(index, stroke.at(0).at(i).toFloat(), stroke.at(1).at(i).toFloat());
 		}
 		index++;
 	}

@@ -7,8 +7,12 @@
 
 #include <QHash>
 
+#include <QVector>
+#include <QVariant>
+#include <QJsonArray>
 
-typedef QVector<float> XYPOINTS;
+
+typedef QVector<QVariant> XYPOINTS;
 typedef QVector<XYPOINTS> STROKE;
 typedef QVector<STROKE> STROKES;
 
@@ -28,7 +32,14 @@ public:
 	static const QString OPTION_KEY_MODEL_PATH;
 	static const QString OPTION_KEY_CANVAS_WIDTH;
 	static const QString OPTION_KEY_CANVAS_HEIGHT;
-private:
+
+	static QJsonArray pointsToJsonArray(XYPOINTS points);
+
+protected:
+
+	QString	m_modelPath;
+	float	m_canvasWidth;
+	float	m_canvasHeight;
 	
 };
 
