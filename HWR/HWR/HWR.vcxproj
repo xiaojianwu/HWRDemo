@@ -219,6 +219,7 @@
     <ResourceCompile Include="HWR.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\README.md" />
     <None Include="style.qss" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

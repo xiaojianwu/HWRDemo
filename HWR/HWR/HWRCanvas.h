@@ -23,13 +23,12 @@ class HWRCanvas : public QWidget {
 	Q_OBJECT
 
 public:
-	HWRCanvas(int hwrType, QWidget * parent = 0);
+	HWRCanvas(QWidget * parent = 0);
 	~HWRCanvas(void) { }
 
 	void setRecognizer(AbstractRecognizer* recognizer);
 
 	void clear();
-	/* evt */
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
@@ -44,9 +43,6 @@ private:
 	void generateCurrentPath();
 
 private:
-	QTimer m_recogtimer;
-	QStringList m_resultList;
-
 	QList<QPainterPath>  m_paths;
 	QPainterPath		   m_currcentPath;
 
@@ -56,14 +52,8 @@ private:
 	STROKE w;
 	STROKES trace;
 
-
-
 	QPainterPath* m_pCrntPath;
 	QList<QPainterPath*> m_lPreviousPath;
-
-	QPen m_pen;
-	QBrush m_brush;
-
 
 	AbstractRecognizer* m_recognizer;
 

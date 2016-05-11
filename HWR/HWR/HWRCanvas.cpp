@@ -6,13 +6,12 @@ size_t HWRCanvas::m_writor_width_fixed = 400;
 size_t HWRCanvas::m_writor_height_fixed = 400;
 int HWRCanvas::m_writor_pen_w_fixed = 4;
 
-HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
+HWRCanvas::HWRCanvas(QWidget * parent)
 	: QWidget(parent)
 	, m_isDrawing(false)
 	, m_pCrntPath(NULL)
 	, m_recognizer(nullptr)
 {
-
 	setContentsMargins(0, 0, 0, 0);
 	setFixedSize(m_writor_width_fixed, m_writor_height_fixed);
 	setAutoFillBackground(true);
@@ -20,14 +19,6 @@ HWRCanvas::HWRCanvas(int hwrType, QWidget * parent)
 	QPalette palette;
 	palette.setColor(QPalette::Background, QColor(0xff, 0xff, 0xff));
 	setPalette(palette);
-
-
-	/* ready to recognize */
-	m_recogtimer.setInterval(1000);
-	m_recogtimer.stop();
-	QObject::connect(&m_recogtimer, SIGNAL(timeout()), this, SLOT(recognize()));
-
-
 }
 void HWRCanvas::setRecognizer(AbstractRecognizer* recognizer)
 {
@@ -40,13 +31,11 @@ void HWRCanvas::mousePressEvent(QMouseEvent *event)
 	if (!m_isDrawing)
 	{
 		m_isDrawing = true;
-		m_recogtimer.stop();
 
 		handwritingX.clear();
 		handwritingY.clear();
 
 		w.clear();
-
 
 		handwritingX << event->localPos().x();
 		handwritingY << event->localPos().y();
@@ -83,23 +72,18 @@ void HWRCanvas::mouseReleaseEvent(QMouseEvent *event)
 	w << handwritingX << handwritingY;
 	trace << w;
 
+	recognize();
+
 	handwritingX.clear();
 	handwritingY.clear();
-
-	m_recogtimer.start();
 }
 
 void HWRCanvas::recognize()
 {
-	m_recogtimer.stop();
-
 	m_isDrawing = false;
 
-	m_resultList = m_recognizer->recognize(trace);
+	m_recognizer->recognize(trace);
 
-	trace.clear();
-
-	
 	update();
 }
 
@@ -188,6 +172,8 @@ void HWRCanvas::generateCurrentPath()
 void HWRCanvas::clear() {
 	handwritingX.clear();
 	handwritingY.clear();
+
+	trace.clear();
 
 	for each (QPainterPath* path in m_lPreviousPath)
 	{

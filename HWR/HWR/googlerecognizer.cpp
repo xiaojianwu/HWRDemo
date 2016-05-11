@@ -97,7 +97,7 @@ QByteArray GoogleRecognizer::pack(STROKES strokes)
 
 	QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
 
-	qDebug() << jsonData;
+	//qDebug() << jsonData;
 	return jsonData;
 }
 
@@ -129,7 +129,7 @@ void GoogleRecognizer::slotReadyRead()
 
 	QByteArray body = reply->readAll();
 
-	qDebug() << "result=" << QString::fromUtf8(body);
+	//qDebug() << "result=" << QString::fromUtf8(body);
 
 	QJsonDocument doc = QJsonDocument::fromJson(body);
 
@@ -144,7 +144,7 @@ void GoogleRecognizer::slotReadyRead()
 			resultList << recognizeList[i].toString();
 		}
 
-		qDebug() << "result list=" << resultList;
+		//qDebug() << "result list=" << resultList;
 
 		emit recognizeResult(resultList);
 	}

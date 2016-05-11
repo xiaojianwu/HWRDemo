@@ -16,9 +16,7 @@ HWR::HWR(QWidget *parent)
 	m_options[AbstractRecognizer::OPTION_KEY_CANVAS_HEIGHT] = QString::number(400);
 	m_options[AbstractRecognizer::OPTION_KEY_CANVAS_WIDTH] = QString::number(400); ;
 
-
-
-	m_hwArea = new HWRCanvas(m_index, ui.widget_hwArea);
+	m_hwArea = new HWRCanvas(ui.widget_hwArea);
 
 	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index);
 	m_hwArea->setRecognizer(m_recognizer);
@@ -61,6 +59,7 @@ void HWR::onTypeChanged(int index)
 
 void HWR::onRecognizeResult(QStringList list)
 {
+	ui.listWidget->clear();
 	m_resultList = list;
 
 	ui.listWidget->addItems(m_resultList);
