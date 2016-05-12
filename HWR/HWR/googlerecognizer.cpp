@@ -15,7 +15,10 @@
 GoogleRecognizer::GoogleRecognizer(QObject *parent)
 	: AbstractRecognizer(parent)
 {
-
+	qRegisterMetaType<QHash<QString, QString>>("QHash<QString, QString>");
+	qRegisterMetaType<STROKES>("STROKES");
+	connect(this, SIGNAL(sigInit(QHash<QString, QString>)), this, SLOT(onInit(QHash<QString, QString>)));
+	connect(this, SIGNAL(sigRecognize(STROKES)), this, SLOT(onRecognize(STROKES)));
 }
 
 GoogleRecognizer::~GoogleRecognizer()
@@ -24,21 +27,18 @@ GoogleRecognizer::~GoogleRecognizer()
 }
 
 
-bool GoogleRecognizer::init(QHash<QString, QString> options)
+void GoogleRecognizer::onInit(QHash<QString, QString> options)
 {
+	m_nam = new QNetworkAccessManager;
 	QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::Socks5Proxy);
 	proxy.setHostName("127.0.0.1");
 	proxy.setPort(1080);
 
-	m_nam.setProxy(proxy);
-	
-	AbstractRecognizer::init(options);
-
-	return true;
+	m_nam->setProxy(proxy);
 }
 
-void GoogleRecognizer::recognize(STROKES strokes)
+void GoogleRecognizer::onRecognize(STROKES strokes)
 {
 	QByteArray data = pack(strokes);
 
@@ -107,7 +107,7 @@ void GoogleRecognizer::sendRequest(QByteArray data)
 
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-	QNetworkReply *reply = m_nam.post(request, data);
+	QNetworkReply *reply = m_nam->post(request, data);
 
 
 	connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));

@@ -11,12 +11,13 @@ class HanvonRecognizer : public AbstractRecognizer
 	Q_OBJECT
 
 public:
-	HanvonRecognizer(QObject *parent);
+	HanvonRecognizer(QObject *parent = nullptr);
 	~HanvonRecognizer();
 
-	virtual bool init(QHash<QString, QString> options);
+private slots:
+	void onInit(QHash<QString, QString> options);
 
-	virtual void recognize(STROKES strokes);
+	void onRecognize(STROKES strokes);
 
 private:
 
@@ -30,7 +31,7 @@ private:
 	void slotSslErrors(QList<QSslError>);
 
 private:
-	QNetworkAccessManager m_nam;
+	QNetworkAccessManager* m_nam;
 	
 };
 

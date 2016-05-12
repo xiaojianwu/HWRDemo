@@ -8,12 +8,13 @@ class HCIRecognizer : public AbstractRecognizer
 	Q_OBJECT
 
 public:
-	HCIRecognizer(QObject *parent);
+	HCIRecognizer(QObject *parent = nullptr);
 	~HCIRecognizer();
 
-	virtual bool init(QHash<QString, QString> options);
 
-	virtual void recognize(STROKES strokes);
+	private slots:
+	void onInit(QHash<QString, QString> options);
+	void onRecognize(STROKES strokes);
 
 
 private:

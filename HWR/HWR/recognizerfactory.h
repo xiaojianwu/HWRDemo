@@ -8,6 +8,8 @@
 
 #include <QHash>
 
+#include <QThread>
+
 
 class RecognizerFactory : public QObject
 {
@@ -31,17 +33,25 @@ public:
 		HWR_TYPE_HCI, // ÁéÔÆ
 	};
 
-	AbstractRecognizer* getRecognizer(HWR_TYPE type);
+	AbstractRecognizer* getRecognizer(HWR_TYPE type, QHash<QString, QString> options);
 
 
 private:
 	static RecognizerFactory* instance;
 	RecognizerFactory();
 
+private slots:
+	void onThreadStarted();
+
 private:
 	
 
 	QHash<int, AbstractRecognizer*> m_hwrs;
+
+	AbstractRecognizer* m_lastRecognizer;
+	QHash<QString, QString> m_lastOptions;
+
+	QThread m_workerThread;
 };
 
 #endif // RECOGNIZERFACTORY_H

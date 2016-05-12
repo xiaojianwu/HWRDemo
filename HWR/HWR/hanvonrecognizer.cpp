@@ -6,7 +6,10 @@
 HanvonRecognizer::HanvonRecognizer(QObject *parent)
 	: AbstractRecognizer(parent)
 {
-
+	qRegisterMetaType<QHash<QString, QString>>("QHash<QString, QString>");
+	qRegisterMetaType<STROKES>("STROKES");
+	connect(this, SIGNAL(sigInit(QHash<QString, QString>)), this, SLOT(onInit(QHash<QString, QString>)));
+	connect(this, SIGNAL(sigRecognize(STROKES)), this, SLOT(onRecognize(STROKES)));
 }
 
 HanvonRecognizer::~HanvonRecognizer()
@@ -14,16 +17,12 @@ HanvonRecognizer::~HanvonRecognizer()
 
 }
 
-
-
-bool HanvonRecognizer::init(QHash<QString, QString> options)
+void HanvonRecognizer::onInit(QHash<QString, QString> options)
 {
-	AbstractRecognizer::init(options);
-
-	return true;
+	m_nam = new QNetworkAccessManager;
 }
 
-void HanvonRecognizer::recognize(STROKES strokes)
+void HanvonRecognizer::onRecognize(STROKES strokes)
 {
 	QByteArray data = pack(strokes);
 
@@ -74,7 +73,7 @@ void HanvonRecognizer::sendRequest(QByteArray data)
 
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
 
-	QNetworkReply *reply = m_nam.post(request, data);
+	QNetworkReply *reply = m_nam->post(request, data);
 
 
 	connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));

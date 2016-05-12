@@ -12,13 +12,13 @@ class GoogleRecognizer : public AbstractRecognizer
 	Q_OBJECT
 
 public:
-	GoogleRecognizer(QObject *parent);
+	GoogleRecognizer(QObject *parent = nullptr);
 	~GoogleRecognizer();
 
 
-	virtual bool init(QHash<QString, QString> options);
-
-	virtual void recognize(STROKES strokes);
+private slots:
+	void onInit(QHash<QString, QString> options);
+	void onRecognize(STROKES strokes);
 
 private:
 
@@ -33,7 +33,7 @@ private:
 
 
 private:
-	QNetworkAccessManager m_nam;
+	QNetworkAccessManager* m_nam;
 
 };
 

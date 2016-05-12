@@ -18,7 +18,10 @@
 HCIRecognizer::HCIRecognizer(QObject *parent)
 	: AbstractRecognizer(parent)
 {
-
+	qRegisterMetaType<QHash<QString, QString>>("QHash<QString, QString>");
+	qRegisterMetaType<STROKES>("STROKES");
+	connect(this, SIGNAL(sigInit(QHash<QString, QString>)), this, SLOT(onInit(QHash<QString, QString>)));
+	connect(this, SIGNAL(sigRecognize(STROKES)), this, SLOT(onRecognize(STROKES)));
 }
 
 HCIRecognizer::~HCIRecognizer()
@@ -72,10 +75,9 @@ bool HCIRecognizer::CheckAndUpdateAuth()
 	}
 }
 
-bool HCIRecognizer::init(QHash<QString, QString> options)
-{
-	AbstractRecognizer::init(options);
 
+void HCIRecognizer::onInit(QHash<QString, QString> options)
+{
 	std::string appkey = "ed5d5407"; //  options["appKey"].toStdString();
 	std::string developerKey = "5ef9e5b01c5f6c7490777ca25469a793"; // options["developerKey"].toStdString();
 	std::string cloudUrl = "test.api.hcicloud.com:8888"; // options["cloudUrl"].toStdString();
@@ -88,7 +90,7 @@ bool HCIRecognizer::init(QHash<QString, QString> options)
 	std::string datapath = "d:\\hcitest\\data";// options["datapath"].toStdString();
 
 
-	//SYS初始化
+											   //SYS初始化
 	HCI_ERR_CODE err_code = HCI_ERR_NONE;
 	//配置串是由"字段=值"的形式给出的一个字符串，多个字段之间以','隔开。字段名不分大小写。
 	std::string init_config = "";
@@ -103,17 +105,22 @@ bool HCIRecognizer::init(QHash<QString, QString> options)
 	err_code = hci_init(init_config.c_str());
 	if (err_code != HCI_ERR_NONE)
 	{
-		qDebug() << QString("hci_init return (%1:%2)\n").arg(err_code).arg(hci_get_error_info(err_code));
-		return false;
+		QString msg = QString("hci_init return (%1:%2)\n").arg(err_code).arg(hci_get_error_info(err_code));
+
+		qDebug() << msg;
+		emit error(msg);
+		return;
 	}
 
 
 	//检测授权，如果过期则更新授权
 	if (!CheckAndUpdateAuth())
 	{
-		qDebug() << "CheckAndUpdateAuth failed\n";
+		QString msg = "CheckAndUpdateAuth failed\n";
 		hci_release();
-		return false;
+		qDebug() << msg;
+		emit error(msg);
+		return;
 	}
 
 	//ASR初始化
@@ -124,8 +131,11 @@ bool HCIRecognizer::init(QHash<QString, QString> options)
 	err_code = hci_hwr_init(hwr_config.c_str());
 	if (err_code != HCI_ERR_NONE)
 	{
-		qDebug() << QString("hci_hwr_init return (%1:%2) \n").arg(err_code).arg(hci_get_error_info(err_code));
-		return false;
+		QString msg = QString("hci_hwr_init return (%1:%2) \n").arg(err_code).arg(hci_get_error_info(err_code));
+
+		qDebug() << msg;
+		emit error(msg);
+		return;
 	}
 	qDebug() << "hci_hwr_init success \n";
 
@@ -137,15 +147,17 @@ bool HCIRecognizer::init(QHash<QString, QString> options)
 	err_code = hci_hwr_session_start(session_config.c_str(), &m_nSessionId);
 	if (err_code != HCI_ERR_NONE)
 	{
-		qDebug() << QString("hci_hwr_session_start return (%1:%2)\n").arg(err_code).arg(hci_get_error_info(err_code));
-		return false;
+		QString msg = QString("hci_hwr_session_start return (%1:%2)\n").arg(err_code).arg(hci_get_error_info(err_code));
+
+		qDebug() << msg;
+		emit error(msg);
+
+		return;
 	}
 	qDebug() << "hci_hwr_session_start success\n";
-
-	return true;
 }
 
-void HCIRecognizer::recognize(STROKES strokes)
+void HCIRecognizer::onRecognize(STROKES strokes)
 {
 	QVector<short> shortData = pack(strokes);
 
@@ -159,7 +171,7 @@ void HCIRecognizer::recognize(STROKES strokes)
 	//hwr recog
 	HWR_RECOG_RESULT hwrRecogResult;
 	std::string recog_config = "";
-	
+
 	QTime time;
 	time.start();
 
@@ -186,7 +198,6 @@ void HCIRecognizer::recognize(STROKES strokes)
 		qDebug() << QString("hci_hwr_recog return (%1:%2)\n").arg(err_code).arg(hci_get_error_info(err_code));
 	}
 }
-
 
 QVector<short> HCIRecognizer::pack(STROKES strokes)
 {

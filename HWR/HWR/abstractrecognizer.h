@@ -24,9 +24,9 @@ public:
 	AbstractRecognizer(QObject *parent);
 	~AbstractRecognizer();
 
-	virtual bool init(QHash<QString, QString> options) = 0;
+	virtual bool init(QHash<QString, QString> options);
 
-	virtual void recognize(STROKES strokes) = 0;
+	virtual void recognize(STROKES strokes);
 
 
 	static const QString OPTION_KEY_MODEL_PATH;
@@ -36,7 +36,13 @@ public:
 	static QJsonArray pointsToJsonArray(XYPOINTS points);
 
 signals:
+	void sigInit(QHash<QString, QString> options);
+	void sigRecognize(STROKES strokes);
+
+signals:
 	void recognizeResult(QStringList result);
+
+	void error(QString errorStr);
 
 protected:
 

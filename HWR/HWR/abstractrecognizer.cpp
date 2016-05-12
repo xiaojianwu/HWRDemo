@@ -19,6 +19,12 @@ const QString AbstractRecognizer::OPTION_KEY_CANVAS_WIDTH = "canvas.width";
 const QString AbstractRecognizer::OPTION_KEY_CANVAS_HEIGHT = "canvas.height";
 
 
+void AbstractRecognizer::recognize(STROKES strokes)
+{
+	emit sigRecognize(strokes);
+}
+
+
 bool AbstractRecognizer::init(QHash<QString, QString> options)
 {
 	if (!options.contains(OPTION_KEY_MODEL_PATH))
@@ -38,6 +44,9 @@ bool AbstractRecognizer::init(QHash<QString, QString> options)
 		return false;
 	}
 	m_canvasHeight = options[OPTION_KEY_CANVAS_HEIGHT].toFloat();
+
+
+	emit sigInit(options);
 
 	return true;
 }

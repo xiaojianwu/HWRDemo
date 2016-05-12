@@ -18,9 +18,9 @@ HWR::HWR(QWidget *parent)
 
 	m_hwArea = new HWRCanvas(ui.widget_hwArea);
 
-	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index);
+	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index, m_options);
 	m_hwArea->setRecognizer(m_recognizer);
-	m_recognizer->init(m_options);
+	//m_recognizer->init(m_options);
 	connect(m_recognizer, SIGNAL(recognizeResult(QStringList)), this, SLOT(onRecognizeResult(QStringList)));
 
 
@@ -48,9 +48,9 @@ void HWR::onTypeChanged(int index)
 
 	disconnect(m_recognizer, 0);
 
-	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index);
+	m_recognizer = RecognizerFactory::Get()->getRecognizer((RecognizerFactory::HWR_TYPE)m_index, m_options);
 	m_hwArea->setRecognizer(m_recognizer);
-	m_recognizer->init(m_options);
+	//m_recognizer->init(m_options);
 
 	connect(m_recognizer, SIGNAL(recognizeResult(QStringList)), this, SLOT(onRecognizeResult(QStringList)));
 
