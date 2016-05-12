@@ -31,9 +31,13 @@ void GoogleRecognizer::onInit(QHash<QString, QString> options)
 {
 	m_nam = new QNetworkAccessManager;
 	QNetworkProxy proxy;
-	proxy.setType(QNetworkProxy::Socks5Proxy);
-	proxy.setHostName("127.0.0.1");
-	proxy.setPort(1080);
+	//proxy.setType(QNetworkProxy::Socks5Proxy);
+	//proxy.setHostName("127.0.0.1");
+	//proxy.setPort(1080);
+
+	proxy.setType(QNetworkProxy::HttpProxy);
+	proxy.setHostName("192.168.16.232");
+	proxy.setPort(8080);
 
 	m_nam->setProxy(proxy);
 }

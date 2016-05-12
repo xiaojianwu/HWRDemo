@@ -124,6 +124,19 @@
     <string>手写识别</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_proxy">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>30</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>代理设置</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

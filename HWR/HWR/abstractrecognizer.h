@@ -32,6 +32,9 @@ public:
 	static const QString OPTION_KEY_MODEL_PATH;
 	static const QString OPTION_KEY_CANVAS_WIDTH;
 	static const QString OPTION_KEY_CANVAS_HEIGHT;
+	static const QString OPTION_KEY_PROXY_TYPE;
+	static const QString OPTION_KEY_PROXY_IP;
+	static const QString OPTION_KEY_PROXY_PORT;
 
 	static QJsonArray pointsToJsonArray(XYPOINTS points);
 
