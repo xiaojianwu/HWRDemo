@@ -26,7 +26,7 @@ public:
 
 	virtual bool init(QHash<QString, QString> options) = 0;
 
-	virtual QStringList recognize(STROKES strokes) = 0;
+	virtual void recognize(STROKES strokes) = 0;
 
 
 	static const QString OPTION_KEY_MODEL_PATH;

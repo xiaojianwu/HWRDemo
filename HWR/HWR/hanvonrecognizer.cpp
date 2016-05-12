@@ -23,14 +23,11 @@ bool HanvonRecognizer::init(QHash<QString, QString> options)
 	return true;
 }
 
-QStringList HanvonRecognizer::recognize(STROKES strokes)
+void HanvonRecognizer::recognize(STROKES strokes)
 {
 	QByteArray data = pack(strokes);
 
 	sendRequest(data);
-
-	QStringList result;
-	return result;
 }
 
 

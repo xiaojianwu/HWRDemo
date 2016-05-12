@@ -60,6 +60,11 @@
         <string>汉王云手写行叠写</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>灵云手写识别HWR</string>
+       </property>
+      </item>
      </widget>
     </item>
    </layout>

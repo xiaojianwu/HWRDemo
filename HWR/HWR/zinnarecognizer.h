@@ -15,7 +15,7 @@ public:
 
 	virtual bool init(QHash<QString, QString> options);
 
-	virtual QStringList recognize(STROKES strokes);
+	virtual void recognize(STROKES strokes);
 
 private:
 	zinnia::Recognizer *m_recognizer;

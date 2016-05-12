@@ -38,14 +38,11 @@ bool GoogleRecognizer::init(QHash<QString, QString> options)
 	return true;
 }
 
-QStringList GoogleRecognizer::recognize(STROKES strokes)
+void GoogleRecognizer::recognize(STROKES strokes)
 {
 	QByteArray data = pack(strokes);
 
 	sendRequest(data);
-
-	QStringList result;
-	return result;
 }
 
 

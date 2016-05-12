@@ -34,10 +34,10 @@ bool ZinnaRecognizer::init(QHash<QString, QString> options)
 	return true;
 }
 
-QStringList ZinnaRecognizer::recognize(STROKES strokes)
+void ZinnaRecognizer::recognize(STROKES strokes)
 {
 	// Perform the recognition
-	QStringList dstr;
+	QStringList resultList;
 
 	m_character = zinnia::Character::create();
 	m_character->clear();
@@ -67,7 +67,7 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 	else {
 		for (size_t i = 0; i < result->size(); ++i) {
 
-			dstr.append(QString::fromUtf8(result->value(i), 3));
+			resultList.append(QString::fromUtf8(result->value(i), 3));
 			qDebug() << QString::fromUtf8(result->value(i), 3) << "\t" << result->score(i);
 		}
 
@@ -77,7 +77,5 @@ QStringList ZinnaRecognizer::recognize(STROKES strokes)
 
 	delete m_character;
 
-	emit recognizeResult(dstr);
-
-	return dstr;
+	emit recognizeResult(resultList);
 }

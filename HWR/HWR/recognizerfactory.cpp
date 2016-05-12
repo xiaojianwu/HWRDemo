@@ -6,6 +6,8 @@
 
 #include "hanvonrecognizer.h"
 
+#include "hcirecognizer.h"
+
 RecognizerFactory* RecognizerFactory::instance = nullptr;
 RecognizerFactory::RecognizerFactory()
 {
@@ -32,6 +34,9 @@ AbstractRecognizer* RecognizerFactory::getRecognizer(HWR_TYPE type)
 			break;
 		case RecognizerFactory::HWR_TYPE_HANVON:
 			hwr = new HanvonRecognizer(this);
+			break;
+		case RecognizerFactory::HWR_TYPE_HCI:
+			hwr = new HCIRecognizer(this);
 			break;
 		default:
 			break;

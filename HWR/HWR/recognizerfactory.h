@@ -28,6 +28,7 @@ public:
 		HWR_TYPE_ZINNA = 0,
 		HWR_TYPE_GOOGLE_INPUT_TOOLS, 
 		HWR_TYPE_HANVON, // ∫∫Õı
+		HWR_TYPE_HCI, // ¡È‘∆
 	};
 
 	AbstractRecognizer* getRecognizer(HWR_TYPE type);
