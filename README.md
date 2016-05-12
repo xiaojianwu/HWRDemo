@@ -17,7 +17,9 @@ code：code为固定值，直接使用url中的code即可
 请求参数描述     以JSON字符串形式，放到请求消息体中     
 请求方法：POST     
 Content-Type：application/octet-stream
+
 | 字段  | 描述  |
+| :------------: | :------------: |
 | uid |您的服务器IP地址。 |
 |  lang | 中文简体：chns；中文繁体：chnt；英文：en  |
 |  data |  手写行轨迹串. 格式是: x1,y1,x2,y2, -1,0, x3,y3,x4,y4,-1,0,-1,-1 |
