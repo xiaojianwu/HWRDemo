@@ -1,21 +1,24 @@
 # HWRDemo
 
+## Google input tools handwriting
 > Google input tools使用的是https协议，需要libssl的以下三个库文件
 - libssl32.dll
 - libeay32.dll
 - ssleay32.dll
 
 
-汉王接口 （http://developer.hanvon.com/api/toAPIinfo.do?id=4&num=）
-# 请求接口
+## 汉王接口
+（http://developer.hanvon.com/api/toAPIinfo.do?id=4&num=）
+##### 请求接口
 
 - 简体中文：http(s)://api.hanvon.com/rt/ws/v1/hand/line?key=yourKey&code=d4b92957-78ed-4c52-a004-ac3928b054b5
 - 繁体中文：http(s)://api.hanvon.com/rt/ws/v1/hand/line?key=yourKey&code=05a7d172-ad21-4749-be0f-bfa4166d4da0
 - 英文：http(s)://api.hanvon.com/rt/ws/v1/hand/line?key=yourKey&code=f01d64a2-bd96-4554-8bcc-81d221f314a4
+
 key：请到开发中心-->应用管理-->Key管理，在您的Key列表中找到对应的Key
 code：code为固定值，直接使用url中的code即可
-请求参数描述     以JSON字符串形式，放到请求消息体中     
-请求方法：POST     
+请求参数描述     以JSON字符串形式，放到请求消息体中 
+请求方法：POST
 Content-Type：application/octet-stream
 
 | 字段  | 描述  |
