@@ -22,6 +22,8 @@ public:
 private slots:
 	void onRecognizeResult(QStringList list);
 
+	void onRecognize();
+
 private:
 	Ui::HWRClass ui;
 

@@ -23,7 +23,8 @@ HWR::HWR(QWidget *parent)
 	//m_recognizer->init(m_options);
 	connect(m_recognizer, SIGNAL(recognizeResult(QStringList)), this, SLOT(onRecognizeResult(QStringList)));
 
-
+	connect(ui.pushButton_recognize, SIGNAL(clicked()), this, SLOT(onRecognize()));
+	
 	connect(ui.pushButton_clear, SIGNAL(clicked()), this, SLOT(onClear()));
 
 	connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged(int)));
@@ -63,4 +64,9 @@ void HWR::onRecognizeResult(QStringList list)
 	m_resultList = list;
 
 	ui.listWidget->addItems(m_resultList);
+}
+
+void HWR::onRecognize()
+{
+	m_hwArea->recognize();
 }

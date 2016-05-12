@@ -35,8 +35,8 @@ protected:
 	void mouseReleaseEvent(QMouseEvent * event);
 	void paintEvent(QPaintEvent * event);
 
-protected slots:
-	void recognize(void);
+public slots:
+	void recognize();
 
 private:
 	QList<QPainterPath>  m_paths;

@@ -27,7 +27,10 @@ AbstractRecognizer* RecognizerFactory::getRecognizer(HWR_TYPE type, QHash<QStrin
 		switch (type)
 		{
 		case RecognizerFactory::HWR_TYPE_ZINNA:
+		{
 			hwr = new ZinnaRecognizer(this);
+			hwr->init(options);
+		}
 			break;
 		case RecognizerFactory::HWR_TYPE_GOOGLE_INPUT_TOOLS:
 		{
