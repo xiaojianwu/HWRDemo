@@ -30,6 +30,9 @@ void AbstractRecognizer::recognize(STROKES strokes)
 
 bool AbstractRecognizer::init(QHash<QString, QString> options)
 {
+
+	m_proxyType = 2; // QNetworkProxy::NoProxy;
+
 	if (!options.contains(OPTION_KEY_MODEL_PATH))
 	{
 		return false;
@@ -47,6 +50,25 @@ bool AbstractRecognizer::init(QHash<QString, QString> options)
 		return false;
 	}
 	m_canvasHeight = options[OPTION_KEY_CANVAS_HEIGHT].toFloat();
+
+
+	if (options.contains(OPTION_KEY_PROXY_TYPE))
+	{
+		m_proxyType = options[OPTION_KEY_PROXY_TYPE].toInt();
+	}
+	
+
+	if (options.contains(OPTION_KEY_PROXY_IP))
+	{
+		m_proxyIp = options[OPTION_KEY_PROXY_IP];
+	}
+
+
+	if (options.contains(OPTION_KEY_PROXY_PORT))
+	{
+		m_proxyPort = options[OPTION_KEY_PROXY_PORT].toInt();
+	}
+
 
 
 	emit sigInit(options);

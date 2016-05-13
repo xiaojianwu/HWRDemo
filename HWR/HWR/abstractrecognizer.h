@@ -52,6 +52,10 @@ protected:
 	QString	m_modelPath;
 	float	m_canvasWidth;
 	float	m_canvasHeight;
+
+	int		m_proxyType;
+	QString m_proxyIp;
+	int		m_proxyPort;
 	
 };
 

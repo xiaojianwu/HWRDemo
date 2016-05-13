@@ -3,6 +3,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include <QNetworkProxy>
+
 HanvonRecognizer::HanvonRecognizer(QObject *parent)
 	: AbstractRecognizer(parent)
 {
@@ -20,6 +22,16 @@ HanvonRecognizer::~HanvonRecognizer()
 void HanvonRecognizer::onInit(QHash<QString, QString> options)
 {
 	m_nam = new QNetworkAccessManager;
+
+	if (m_proxyType != QNetworkProxy::NoProxy)
+	{
+		QNetworkProxy proxy;
+		proxy.setType((QNetworkProxy::ProxyType)m_proxyType);
+		proxy.setHostName(m_proxyIp);
+		proxy.setPort(m_proxyPort);
+
+		m_nam->setProxy(proxy);
+	}
 }
 
 void HanvonRecognizer::onRecognize(STROKES strokes)
